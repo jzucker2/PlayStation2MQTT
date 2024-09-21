@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const spawn = require('await-spawn');
 const mqtt = require("mqtt");
 const Constants = require('./constants');
+const HassSwitch = require("./hassSwitch");
 const metricsMiddleware = promBundle({includeMethod: true});
 // actual framework is broken as a module :(
 // const playactor = require('playactor');
@@ -159,6 +160,14 @@ console.log(`Running on http://${HOST}:${PORT}`);
 // MQTT implementation stuff here
 const subscribeTopic = "playstation";
 
+const nodeID = "playstation2mqtt";
+const objectID = "playstation";
+const uniqueID = "foobar1"
+const playstationSwitch = new HassSwitch(nodeID, objectID, uniqueID);
+const playstationDiscoveryTopic = playstationSwitch.getConfigTopic();
+const playstationDiscoveryPayload = playstationSwitch.getConfigPayloadString()
+const commandTopic = playstationSwitch.getCommandTopic();
+
 client.on("connect", () => {
     console.log('MQTT Connected');
 
@@ -168,9 +177,28 @@ client.on("connect", () => {
             client.publish(subscribeTopic, "Subscribed mqtt");
         }
     });
+
+
+    client.publish(playstationDiscoveryTopic, playstationDiscoveryPayload);
+
+    client.subscribe(commandTopic, (err) => {
+        console.log(`Subscribed to commandTopic '${commandTopic}'`);
+        if (err) {
+            console.error(`Subscribed to commandTopic: ${commandTopic} err => '${err}'`);
+        }
+    });
 });
 
 client.on("message", (topic, payload) => {
     // message is Buffer
-    console.log('Received Message:', topic, payload.toString());
+    const message = payload.toString();
+    console.log('Received Message:', topic, message);
+    if (topic === commandTopic) {
+        console.log('Got playstation switch message: ', message);
+        if (playstationSwitch.getIsOnPayload(message)) {
+            console.log('Turn on playstation');
+        } else {
+            console.log('Turn off playstation');
+        }
+    }
 });
