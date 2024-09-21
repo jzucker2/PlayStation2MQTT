@@ -13,11 +13,12 @@ class HassSwitch {
         this.objectID = objectID;
         this.uniqueID = uniqueID;
         this.name = "Playstation";
+        this.discoveryPrefix = Constants.MQTT_DISCOVERY_PREFIX;
     }
 
     getBaseTopic() {
         // return `homeassistant/switch/${this.nodeID}/${this.objectID}`
-        return `homeassistant/switch/${this.objectID}`
+        return `${this.discoveryPrefix}/switch/${this.objectID}`
     }
 
     getConfigTopic() {
