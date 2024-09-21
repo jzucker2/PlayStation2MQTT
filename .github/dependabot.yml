@@ -43,3 +43,4 @@ updates:
       - dependency-name: "await-spawn"
       # custom for this project
       - dependency-name: "playactor"
+      - dependency-name: "mqtt"
