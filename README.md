@@ -16,3 +16,7 @@ curl http://localhost:4242/playactor/ps5/10.0.1.105/wake
 
 curl http://localhost:4242/playactor/ps5/10.0.1.105/standby
 ```
+
+## MQTT Info
+
+* https://www.home-assistant.io/integrations/mqtt/#examples
