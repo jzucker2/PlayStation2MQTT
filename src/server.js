@@ -164,6 +164,9 @@ const nodeID = "playstation2mqtt";
 const objectID = "playstation";
 const uniqueID = "foobar1"
 const playstationSwitch = new HassSwitch(nodeID, objectID, uniqueID);
+const playstationDiscoveryTopic = playstationSwitch.getConfigTopic();
+const playstationDiscoveryPayload = playstationSwitch.getConfigPayloadString()
+const commandTopic = playstationSwitch.getCommandTopic();
 
 client.on("connect", () => {
     console.log('MQTT Connected');
@@ -175,11 +178,9 @@ client.on("connect", () => {
         }
     });
 
-    const playstationDiscoveryTopic = playstationSwitch.getConfigTopic();
-    const playstationDiscoveryPayload = playstationSwitch.getConfigPayloadString()
+
     client.publish(playstationDiscoveryTopic, playstationDiscoveryPayload);
 
-    const commandTopic = playstationSwitch.getCommandTopic();
     client.subscribe(commandTopic, (err) => {
         console.log(`Subscribed to commandTopic '${commandTopic}'`);
         if (err) {
@@ -190,5 +191,14 @@ client.on("connect", () => {
 
 client.on("message", (topic, payload) => {
     // message is Buffer
-    console.log('Received Message:', topic, payload.toString());
+    const message = payload.toString();
+    console.log('Received Message:', topic, message);
+    if (topic === commandTopic) {
+        console.log('Got playstation switch message: ', message);
+        if (playstationSwitch.getIsOnPayload(message)) {
+            console.log('Turn on playstation');
+        } else {
+            console.log('Turn off playstation');
+        }
+    }
 });

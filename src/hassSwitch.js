@@ -14,6 +14,8 @@ class HassSwitch {
         this.uniqueID = uniqueID;
         this.name = "Playstation";
         this.discoveryPrefix = Constants.MQTT_DISCOVERY_PREFIX;
+        this.onPayload = "ON";
+        this.offPayload = "OFF";
     }
 
     getBaseTopic() {
@@ -36,6 +38,8 @@ class HassSwitch {
                     this.uniqueID,
                 ],
                 "name": this.name,
+                "manufacturer": "Sony",
+
             },
         };
     }
@@ -52,6 +56,13 @@ class HassSwitch {
 
     getCommandTopic() {
         return `${this.getBaseTopic()}/set`;
+    }
+
+    getIsOnPayload = (message) => {
+        return message === this.onPayload;
+    }
+    getIsOffPayload = (message) => {
+        return message === this.offPayload;
     }
 }
 
