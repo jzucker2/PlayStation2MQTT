@@ -102,7 +102,8 @@ const subscribeTopic = "playstation";
 const nodeID = "playstation2mqtt";
 const objectID = "playstation";
 const uniqueID = "foobar1"
-const playstationSwitch = new HassSwitch(nodeID, objectID, uniqueID);
+const playstationSwitch = new HassSwitch(nodeID, objectID, uniqueID, Constants.PS5_IP_ADDRESS);
+const playstationIP = playstationSwitch.playstationIP;
 const playstationDiscoveryTopic = playstationSwitch.getConfigTopic();
 const playstationDiscoveryPayload = playstationSwitch.getConfigPayloadString()
 const commandTopic = playstationSwitch.getCommandTopic();
@@ -128,16 +129,28 @@ client.on("connect", () => {
     });
 });
 
-client.on("message", (topic, payload) => {
+client.on("message", async(topic, payload) => {
     // message is Buffer
     const message = payload.toString();
     console.log('Received Message:', topic, message);
     if (topic === commandTopic) {
         console.log('Got playstation switch message: ', message);
         if (playstationSwitch.getIsOnPayload(message)) {
-            console.log('Turn on playstation');
+            console.log('MQTT => Turn on playstation');
+            try {
+                const results = await setPlaystationWake(playstationIP);
+                console.log(`mqtt wake got results ===> ${results}`);
+            } catch (e) {
+                console.error(`mqtt wake returning error --> ${e.toString()}`);
+            }
         } else {
-            console.log('Turn off playstation');
+            console.log('MQTT => Turn off playstation');
+            try {
+                const results = await setPlaystationStandby(playstationIP);
+                console.log(`mqtt standby got results ===> ${results}`);
+            } catch (e) {
+                console.error(`mqtt standby returning error --> ${e.toString()}`);
+            }
         }
     }
 });
