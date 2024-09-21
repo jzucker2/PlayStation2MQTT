@@ -3,7 +3,6 @@
 const express = require('express');
 const promBundle = require("express-prom-bundle");
 const bodyParser = require('body-parser');
-const spawn = require('await-spawn');
 const mqtt = require("mqtt");
 const Constants = require('./constants');
 const HassSwitch = require("./hassSwitch");
