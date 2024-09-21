@@ -8,6 +8,7 @@ module.exports = {
     MQTT_USERNAME: process.env.MQTT_USERNAME || 'foo',
     MQTT_PASSWORD: process.env.MQTT_PASSWORD || 'bar',
     MQTT_CLIENT_ID: process.env.MQTT_CLIENT_ID || 'playstation2mqtt',
+    MQTT_DISCOVERY_PREFIX: process.env.MQTT_DISCOVERY_PREFIX || 'homeassistant',
 
     get mqttConnectionOptions() {
         delete this.mqttConnectionOptions;
