@@ -18,7 +18,7 @@ class HassSwitch {
 
     getBaseTopic() {
         // return `homeassistant/switch/${this.nodeID}/${this.objectID}`
-        return `${this.discoveryPrefix}/switch/${this.objectID}`
+        return `${this.discoveryPrefix}/switch/${this.nodeID}/${this.objectID}`
     }
 
     getConfigTopic() {
