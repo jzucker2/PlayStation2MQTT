@@ -1,0 +1,45 @@
+# https://github.com/marketplace/actions/run-eslint
+
+name: ESLint
+
+#on: [push, pull_request]
+on:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    # every Sunday at UTC midnight
+    - cron: '0 0 * * 0'
+  push:
+    branches: [ master ]
+    # Publish semver tags as releases.
+    tags: [ '*.*.*' ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+    name: Lint
+    steps:
+      -
+        name: Check out source repository
+        uses: actions/checkout@v4
+      # https://github.com/actions/setup-node/issues/317#issuecomment-1059337324
+      # silly bug with the cache
+      # Workaround to avoid "Post Run actions/setup-node" failures.
+      # See: https://github.com/actions/setup-node/issues/317
+      -
+        name: Node cache workaround
+        run: mkdir -p /home/runner/.npm
+        continue-on-error: true
+      -
+        name: Set up Node environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      -
+        name: Install modules (including devDependencies)
+        run: yarn install
+      -
+        name: Run ESLint
+        run: yarn run eslint . --ext .js,.jsx,.ts,.tsx
