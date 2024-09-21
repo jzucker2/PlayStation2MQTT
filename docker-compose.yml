@@ -13,5 +13,5 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true
     volumes:
-      - credentials.json:$HOME/.config/playactor/credentials.json
+      - ./credentials.json:$HOME/.config/playactor/credentials.json
     stdin_open: true
