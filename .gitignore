@@ -1,3 +1,5 @@
+# ignore the playstation credentials file
+credentials.json
 .tool-versions
 .idea
 .DS_Store
