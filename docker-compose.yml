@@ -16,5 +16,5 @@ services:
       - MQTT_USERNAME=${MQTT_USERNAME}
       - MQTT_PASSWORD=${MQTT_PASSWORD}
     volumes:
-      - ./credentials.json:$HOME/.config/playactor/credentials.json
+      - ./credentials.json:/root/.config/playactor/credentials.json
     stdin_open: true
