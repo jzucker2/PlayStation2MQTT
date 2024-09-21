@@ -4,6 +4,7 @@ const express = require('express');
 const promBundle = require("express-prom-bundle");
 const bodyParser = require('body-parser');
 const spawn = require('await-spawn');
+const mqtt = require("mqtt");
 const Constants = require('./constants');
 const metricsMiddleware = promBundle({includeMethod: true});
 // actual framework is broken as a module :(
@@ -12,6 +13,9 @@ const metricsMiddleware = promBundle({includeMethod: true});
 // Constants
 const PORT = Constants.PORT;
 const HOST = Constants.HOST;
+
+// MQTT
+const client = mqtt.connect(Constants.MQTT_BROKER_URL, Constants.mqttConnectionOptions);
 
 // App
 const app = express();
@@ -150,4 +154,19 @@ app.get('/playactor/ps5/:ps5_ip/standby', async(req, res) => {
 });
 
 app.listen(PORT, HOST);
-console.log(`Running on http://${HOST}:${PORT}`)
+console.log(`Running on http://${HOST}:${PORT}`);
+
+// MQTT implementation stuff here
+client.on("connect", () => {
+    client.subscribe("playstation", (err) => {
+        if (!err) {
+            client.publish("playstation", "Hello mqtt");
+        }
+    });
+});
+
+client.on("message", (topic, message) => {
+    // message is Buffer
+    console.log(message.toString());
+    client.end();
+});
