@@ -36,7 +36,7 @@ RUN mkdir -p $HOME/.config/playactor
 #RUN cp credentials.json $HOME/.config/playactor/credentials.json
 
 # this needs to match the env var in the app
-EXPOSE 5454
+EXPOSE 4242
 
 FROM setup_env AS run_server
 CMD ["npm", "start"]
