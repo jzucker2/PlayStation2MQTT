@@ -8,11 +8,12 @@ const Constants = require('./constants');
 // homeassistant/switch/playstation/state
 // homeassistant/switch/playstation/set
 class HassSwitch {
-    constructor(nodeID, objectID, uniqueID) {
+    constructor(nodeID, objectID, uniqueID, playstationIP) {
         this.nodeID = nodeID;
         this.objectID = objectID;
         this.uniqueID = uniqueID;
         this.name = "Playstation";
+        this.playstationIP = playstationIP;
         this.discoveryPrefix = Constants.MQTT_DISCOVERY_PREFIX;
         this.onPayload = "ON";
         this.offPayload = "OFF";
@@ -61,6 +62,7 @@ class HassSwitch {
     getIsOnPayload = (message) => {
         return message === this.onPayload;
     }
+
     getIsOffPayload = (message) => {
         return message === this.offPayload;
     }
