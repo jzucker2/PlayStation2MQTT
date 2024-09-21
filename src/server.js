@@ -34,6 +34,14 @@ app.get('/', (req, res) => {
 });
 
 // get
+app.get('/-/health', async(req, res) => {
+    // cool tutorial
+    return res.json({
+        "message": "healthy",
+    });
+});
+
+// get
 app.get('/playactor/ps5/:ps5_ip', async(req, res) => {
     // cool tutorial
     // https://zellwk.com/blog/async-await-express/
