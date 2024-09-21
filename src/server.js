@@ -157,16 +157,20 @@ app.listen(PORT, HOST);
 console.log(`Running on http://${HOST}:${PORT}`);
 
 // MQTT implementation stuff here
+const subscribeTopic = "playstation";
+
 client.on("connect", () => {
-    client.subscribe("playstation", (err) => {
+    console.log('MQTT Connected');
+
+    client.subscribe(subscribeTopic, (err) => {
+        console.log(`Subscribed to subscribeTopic '${subscribeTopic}'`);
         if (!err) {
-            client.publish("playstation", "Hello mqtt");
+            client.publish(subscribeTopic, "Subscribed mqtt");
         }
     });
 });
 
-client.on("message", (topic, message) => {
+client.on("message", (topic, payload) => {
     // message is Buffer
-    console.log(message.toString());
-    client.end();
+    console.log('Received Message:', topic, payload.toString());
 });
