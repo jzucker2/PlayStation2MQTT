@@ -1,7 +1,7 @@
 services:
 
-  node-ps5-actor:
-    container_name: node-ps5-actor
+  playstation2mqtt:
+    container_name: playstation2mqtt
     build:
       context: .
       dockerfile: Dockerfile
