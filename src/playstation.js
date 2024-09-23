@@ -1,49 +1,24 @@
 const spawn = require('await-spawn');
+const { executeCLIScript } = require("./cli");
 
 const STANDBY_STATUS = 'STANDBY'; // eslint-disable-line no-unused-vars
 
-function ResponseParseException(value) {
-    this.value = value;
-    this.toString = function() {
-        return `${this.value}`;
-    };
-}
-
-const parseOutput = (commandLineOutput) => {
-    return JSON.parse(commandLineOutput);
-}
-
-const formatDeviceStatusResponse = (commandLineOutput) => {
-    try {
-        const parsedJSON = parseOutput(commandLineOutput);
-        const { type, status, name, id } = parsedJSON;
-        return {
-            'device': type,
-            'name': name,
-            'status': status,
-            'id': id
-        };
-    } catch (e) {
-        throw new ResponseParseException(e.toString());
-    }
-
-}
-
 // https://www.npmjs.com/package/await-spawn
-function PlayactorException(spawnException) {
-    this.spawnException = spawnException;
+function PlayactorException(cliException) {
+    this.cliException = cliException;
     this.toString = function() {
-        return `${this.spawnException.code} => ${this.spawnException.stderr}`;
+        return `${this.cliException.toString()}`;
     };
     this.code = this.spawnException.code;
 }
 
-const executePlayactorScript = async (playactor_args) => {
+const executePlayactorScript = async (playactorArgs) => {
     // https://www.npmjs.com/package/await-spawn
     try {
         // playactor browse --timeout 10000
-        const result = await spawn('playactor', playactor_args);
-        return result.stdout.toString();
+        const result = await executeCLIScript("playactor", playactorArgs);
+        console.log(`executePlayactorScript: ${playactorArgs} got result: ${result}`);
+        return result;
     } catch (e) {
         // console.error(`stdout: ${e.stdout.toString()}`);
         // console.error(`stderr: ${e.stderr.toString()}`);
@@ -59,10 +34,10 @@ const getPlaystationInfo = async (playstationIP) => {
     // https://www.npmjs.com/package/await-spawn
     console.log(`info starting with playstationIP: ${playstationIP}`);
 
-    const playactor_args = ['check', '--ip', playstationIP, '--timeout', '5000'];
-    console.log(`info playactor_args: ${playactor_args}`);
+    const playactorArgs = ['check', '--ip', playstationIP, '--timeout', '5000'];
+    console.log(`info playactorArgs: ${playactorArgs}`);
     try {
-        const results = await executePlayactorScript(playactor_args);
+        const results = await executePlayactorScript(playactorArgs);
         console.log(`info got results ===> ${results}`);
         const currentStatus = formatDeviceStatusResponse(results);
         console.log(`info got formatted currentStatus ===> ${currentStatus}`);
@@ -77,10 +52,10 @@ const setPlaystationStandby = async (playstationIP) => {
     // https://www.npmjs.com/package/await-spawn
     console.log(`standby starting with playstationIP: ${playstationIP}`);
 
-    const playactor_args = ['standby', '--ip', playstationIP, '--timeout', '5000'];
-    console.log(`standby playactor_args: ${playactor_args}`);
+    const playactorArgs = ['standby', '--ip', playstationIP, '--timeout', '5000'];
+    console.log(`standby playactorArgs: ${playactorArgs}`);
     try {
-        const results = await executePlayactorScript(playactor_args);
+        const results = await executePlayactorScript(playactorArgs);
         console.log(`standby got results ===> ${results}`);
         return {
             'message': 'ps5 asleep'
@@ -95,10 +70,10 @@ const setPlaystationWake = async (playstationIP) => {
     // https://www.npmjs.com/package/await-spawn
     console.log(`wake starting with playstationIP: ${playstationIP}`);
 
-    const playactor_args = ['wake', '--ip', playstationIP, '--timeout', '5000', '--no-auth', '--connect-timeout', '5000'];
-    console.log(`wake playactor_args: ${playactor_args}`);
+    const playactorArgs = ['wake', '--ip', playstationIP, '--timeout', '5000', '--no-auth', '--connect-timeout', '5000'];
+    console.log(`wake playactorArgs: ${playactorArgs}`);
     try {
-        const results = await executePlayactorScript(playactor_args);
+        const results = await executePlayactorScript(playactorArgs);
         console.log(`wake got results ===> ${results}`);
         return {
             'message': 'ps5 awakened'
