@@ -39,7 +39,7 @@ const executeCLIScript = async (scriptName, scriptArgs) => {
     // https://www.npmjs.com/package/await-spawn
     try {
         // playactor browse --timeout 10000
-        console.log(`executeCLIScript: ${scriptName} with args: ${scriptArgs}`);
+        console.debug(`executeCLIScript: ${scriptName} with args: ${scriptArgs}`);
         const result = await spawn(scriptName, scriptArgs);
         return result.stdout.toString();
     } catch (e) {

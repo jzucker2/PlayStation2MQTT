@@ -16,7 +16,7 @@ const executePlayactorScript = async (playactorArgs) => {
     try {
         // playactor browse --timeout 10000
         const result = await executeCLIScript("playactor", playactorArgs);
-        console.log(`executePlayactorScript: ${playactorArgs} got result: ${result}`);
+        console.debug(`executePlayactorScript: ${playactorArgs} got result: ${result}`);
         return result;
     } catch (e) {
         // console.error(`stdout: ${e.stdout.toString()}`);
@@ -31,15 +31,15 @@ const executePlayactorScript = async (playactorArgs) => {
 
 const getPlaystationInfo = async (playstationIP) => {
     // https://www.npmjs.com/package/await-spawn
-    console.log(`info starting with playstationIP: ${playstationIP}`);
+    console.debug(`info starting with playstationIP: ${playstationIP}`);
 
     const playactorArgs = ['check', '--ip', playstationIP, '--timeout', '5000'];
-    console.log(`info playactorArgs: ${playactorArgs}`);
+    console.debug(`info playactorArgs: ${playactorArgs}`);
     try {
         const results = await executePlayactorScript(playactorArgs);
-        console.log(`info got results ===> ${results}`);
+        console.debug(`info got results ===> ${results}`);
         const currentStatus = formatDeviceStatusResponse(results);
-        console.log(`info got formatted currentStatus ===> ${currentStatus}`);
+        console.debug(`info got formatted currentStatus ===> ${currentStatus}`);
         return currentStatus;
     } catch (e) {
         console.error(`info returning error --> ${e.toString()}`);
@@ -49,13 +49,13 @@ const getPlaystationInfo = async (playstationIP) => {
 
 const setPlaystationStandby = async (playstationIP) => {
     // https://www.npmjs.com/package/await-spawn
-    console.log(`standby starting with playstationIP: ${playstationIP}`);
+    console.debug(`standby starting with playstationIP: ${playstationIP}`);
 
     const playactorArgs = ['standby', '--ip', playstationIP, '--timeout', '5000'];
-    console.log(`standby playactorArgs: ${playactorArgs}`);
+    console.debug(`standby playactorArgs: ${playactorArgs}`);
     try {
         const results = await executePlayactorScript(playactorArgs);
-        console.log(`standby got results ===> ${results}`);
+        console.debug(`standby got results ===> ${results}`);
         return {
             'message': 'ps5 asleep'
         };
@@ -67,13 +67,13 @@ const setPlaystationStandby = async (playstationIP) => {
 
 const setPlaystationWake = async (playstationIP) => {
     // https://www.npmjs.com/package/await-spawn
-    console.log(`wake starting with playstationIP: ${playstationIP}`);
+    console.debug(`wake starting with playstationIP: ${playstationIP}`);
 
     const playactorArgs = ['wake', '--ip', playstationIP, '--timeout', '5000', '--no-auth', '--connect-timeout', '5000'];
-    console.log(`wake playactorArgs: ${playactorArgs}`);
+    console.debug(`wake playactorArgs: ${playactorArgs}`);
     try {
         const results = await executePlayactorScript(playactorArgs);
-        console.log(`wake got results ===> ${results}`);
+        console.debug(`wake got results ===> ${results}`);
         return {
             'message': 'ps5 awakened'
         };
