@@ -1,3 +1,5 @@
+'use strict';
+
 const spawn = require('await-spawn');
 
 function ResponseParseException(value) {

@@ -1,13 +1,34 @@
+'use strict';
+
 const Constants = require('./constants');
 const {setPlaystationWake, setPlaystationStandby} = require("./playstation");
+const { getOrCreateServerID, getOrCreatePlayStationID } = require("./serverStore");
 
-// <discovery_prefix>/<component>/[<node_id>/]<object_id>/config
-// homeassistant/switch/playstation2mqtt/playstation/config
-// homeassistant/switch/playstation2mqtt/playstation/state
-// homeassistant/switch/playstation2mqtt/playstation/set
-// homeassistant/switch/playstation/config
-// homeassistant/switch/playstation/state
-// homeassistant/switch/playstation/set
+const serverID = getOrCreateServerID();
+const playstationID = getOrCreatePlayStationID();
+
+const getDevicePayload = (identifier, deviceName, manufacturer, viaDevice= undefined) => {
+    const finalPayload = {
+        "identifiers": [
+            identifier,
+        ],
+        "name": deviceName,
+        "manufacturer": manufacturer,
+    };
+    if (viaDevice) {
+        finalPayload["via_device"] = viaDevice;
+    }
+    return finalPayload;
+}
+
+const getServerDevicePayload = () => {
+    return getDevicePayload(serverID, "PlayStation2MQTT Bridge", Constants.APP_NAME);
+}
+
+const getPlaystationDevicePayload = () => {
+    return getDevicePayload(playstationID, "PlayStation", "Sony", serverID);
+}
+
 class HassBase {
     constructor(mqtt, sensorType, name, objectID, deviceClass = undefined, includeCommandTopic = false, entityCategory = undefined) {
         this.mqtt = mqtt;
@@ -15,7 +36,6 @@ class HassBase {
         this.objectID = objectID;
         this.deviceClass = deviceClass;
         this.identifier = Constants.SERVER_NAME;
-        this.deviceName = "Playstation";
         this.name = name;
         this.sensorType = sensorType;
         this.playstationIP = Constants.PS5_IP_ADDRESS;
@@ -25,7 +45,8 @@ class HassBase {
     }
 
     getBaseTopic() {
-        // return `homeassistant/switch/${this.nodeID}/${this.objectID}`
+        // `homeassistant/switch/${this.nodeID}/${this.objectID}`
+        // `homeassistant/switch/playstation2mqtt/${this.objectID}`
         return `${this.discoveryPrefix}/${this.sensorType}/${this.nodeID}/${this.objectID}`;
     }
 
@@ -43,11 +64,15 @@ class HassBase {
         if (!startingString) {
             startingString = this.sensorType;
         }
-        return `${startingString}${this.objectID}${this.identifier}`;
+        return `${serverID}_${startingString}${this.objectID}${this.identifier}`;
     }
 
     getObjectID() {
         return `${this.objectID}_${this.sensorType}`;
+    }
+
+    getDevicePayload() {
+        return getPlaystationDevicePayload();
     }
 
     getConfigPayload() {
@@ -57,13 +82,7 @@ class HassBase {
             "state_topic": this.getStateTopic(),
             "unique_id": this.getUniqueID(),
             "origin": this.getOriginPayload(),
-            "device": {
-                "identifiers": [
-                    this.identifier,
-                ],
-                "name": this.deviceName,
-                "manufacturer": "Sony",
-            },
+            "device": this.getDevicePayload(),
         };
         if (this.deviceClass) {
             basePayload["device_class"] = this.deviceClass;
@@ -102,6 +121,14 @@ class HassBase {
     getCommandTopic() {
         return `${this.getBaseTopic()}/set`;
     }
+
+    getStatePayload() {
+        return "replace_me"
+    }
+
+    publishState() {
+        this.mqtt.publish(this.getStateTopic(), this.getStatePayload());
+    }
 }
 
 class HassDiagnosticSensor extends HassBase {
@@ -110,8 +137,12 @@ class HassDiagnosticSensor extends HassBase {
         super(mqtt, sensorType, name, objectID, deviceClass, false, 'diagnostic');
     }
 
-    publishState() {
-        this.mqtt.publish(this.getStateTopic(), Constants.VERSION);
+    getDevicePayload() {
+        return getServerDevicePayload();
+    }
+
+    getStatePayload() {
+        return Constants.VERSION
     }
 }
 
@@ -121,6 +152,10 @@ class HassSwitch extends HassBase {
         super(mqtt, sensorType, "Playstation Power", "power", sensorType,true);
         this.onPayload = "ON";
         this.offPayload = "OFF";
+    }
+
+    getDevicePayload() {
+        return getPlaystationDevicePayload();
     }
 
     getIsOnPayload = (message) => {
