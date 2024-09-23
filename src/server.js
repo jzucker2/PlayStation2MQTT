@@ -62,13 +62,18 @@ const playstationSwitch = new HassSwitch(client);
 const serverSensor = new HassDiagnosticSensor(client, "Server Version", "server_version");
 const publishAllStatesButton = new HassPublishAllStatesButton(client);
 
+const publishAllStatesAction = () => {
+    console.log("Publish All States");
+    serverSensor.publishState();
+}
+
 client.on("connect", () => {
     console.debug('MQTT Connected');
 
     playstationSwitch.publishDiscoveryMessage();
     serverSensor.publishDiscoveryMessage();
     publishAllStatesButton.publishDiscoveryMessage();
-    serverSensor.publishState();
+    publishAllStatesAction();
     const allSubscribedTopics = [
         playstationSwitch.getCommandTopic(),
         publishAllStatesButton.getCommandTopic(),
@@ -81,11 +86,13 @@ client.on("connect", () => {
     });
 });
 
+
+
 client.on("message", async(topic, payload) => {
     // message is Buffer
     const message = payload.toString();
     console.debug('Received Message:', topic, message);
     await playstationSwitch.handleMessage(topic, message);
-    await publishAllStatesButton.handleMessage(topic, message);
+    await publishAllStatesButton.handleMessage(topic, message, publishAllStatesAction);
     console.debug('Done processing all mqtt messages: ', topic, message);
 });

@@ -200,16 +200,20 @@ class HassSwitch extends HassBase {
 class HassPublishAllStatesButton extends HassServerSensor {
     constructor(mqtt) {
         const sensorType = "button";
-        super(mqtt, sensorType, "Publish States", "publish_states", undefined,false, true);
+        super(mqtt, sensorType, "Publish All States", "publish_all_states", undefined,false, true);
+        this.pressPayload = "PRESS";
     }
 
     getDevicePayload() {
         return getServerDevicePayload();
     }
 
-    handleMessage = async(topic, message) => {
+    handleMessage = async(topic, message, publishAction) => {
         if (topic === this.getCommandTopic()) {
             console.debug('mqtt switch got bridge publish all states message: ', message);
+            if (message === this.pressPayload) {
+                publishAction();
+            }
         }
         return Promise.resolve();
     }
