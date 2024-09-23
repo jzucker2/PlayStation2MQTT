@@ -1,13 +1,23 @@
 'use strict';
 
 const express = require('express');
+const { pinoHTTPLogger, logger } = require("./logging");
+
+// App
+const app = express();
+app.use(pinoHTTPLogger);
+
+// add monitoring
 const promBundle = require("express-prom-bundle");
+const metricsMiddleware = promBundle({includeMethod: true});
+app.use(metricsMiddleware);
+
 const bodyParser = require('body-parser');
 const mqtt = require("mqtt");
 const Constants = require('./constants');
 const { HassSwitch, HassDiagnosticSensor, HassPublishAllStatesButton } = require("./hassSensors");
 const { handleGetPlaystationInfoRequest, handleStandbyPlaystationRequest, handleWakePlaystationRequest } = require("./httpHandlers");
-const metricsMiddleware = promBundle({includeMethod: true});
+
 // actual framework is broken as a module :(
 // const playactor = require('playactor');
 
@@ -17,12 +27,6 @@ const HOST = Constants.HOST;
 
 // MQTT
 const client = mqtt.connect(Constants.MQTT_BROKER_URL, Constants.mqttConnectionOptions);
-
-// App
-const app = express();
-
-// add monitoring
-app.use(metricsMiddleware);
 
 // https://stackoverflow.com/questions/10005939/how-do-i-consume-the-json-post-data-in-an-express-application
 // parse application/json
@@ -55,7 +59,7 @@ app.get('/playactor/ps5/:ps5_ip/standby', async(req, res) => {
 });
 
 app.listen(PORT, HOST);
-console.debug(`Running on http://${HOST}:${PORT}`);
+logger.info(`Running on http://${HOST}:${PORT}`);
 
 // MQTT implementation stuff here
 const playstationSwitch = new HassSwitch(client);
@@ -63,14 +67,14 @@ const serverSensor = new HassDiagnosticSensor(client, "Server Version", "server_
 const publishAllStatesButton = new HassPublishAllStatesButton(client);
 
 const publishAllDiscoveryMessages = () => {
-    console.log("Publish All Discovery Messages");
+    logger.info("Publish All Discovery Messages");
     playstationSwitch.publishDiscoveryMessage();
     serverSensor.publishDiscoveryMessage();
     publishAllStatesButton.publishDiscoveryMessage();
 }
 
 const publishAllStatesAction = () => {
-    console.log("Publish All States");
+    logger.info("Publish All States");
     serverSensor.publishState();
 }
 
@@ -80,15 +84,15 @@ const allSubscribeTopics = [
 ];
 
 client.on("connect", () => {
-    console.debug('MQTT Connected');
+    logger.debug('MQTT Connected');
 
     publishAllDiscoveryMessages();
     publishAllStatesAction();
     
     client.subscribe(allSubscribeTopics, (err) => {
-        console.debug(`Subscribed to allSubscribeTopics '${allSubscribeTopics}'`);
+        logger.debug(`Subscribed to allSubscribeTopics '${allSubscribeTopics}'`);
         if (err) {
-            console.error(`Subscribe error to allSubscribeTopics: ${allSubscribeTopics} with err => '${err}'`);
+            logger.error(`Subscribe error to allSubscribeTopics: ${allSubscribeTopics} with err => '${err}'`);
         }
     });
 });
@@ -98,8 +102,8 @@ client.on("connect", () => {
 client.on("message", async(topic, payload) => {
     // message is Buffer
     const message = payload.toString();
-    console.debug('Received Message:', topic, message);
+    logger.debug('Received Message:', topic, message);
     await playstationSwitch.handleMessage(topic, message);
     await publishAllStatesButton.handleMessage(topic, message, publishAllStatesAction);
-    console.debug('Done processing all mqtt messages: ', topic, message);
+    logger.debug('Done processing all mqtt messages: ', topic, message);
 });

@@ -40,11 +40,11 @@ updates:
       - dependencies
     allow:
       # added for async handling
-      - dependency-name: "await-spawn"
       - dependency-name: "body-parser"
       - dependency-name: "express"
       - dependency-name: "express-prom-bundle"
       - dependency-name: "fs-store"
       - dependency-name: "mqtt"
+      - dependency-name: "pino*"
       - dependency-name: "playactor"
       - dependency-name: "prom-client"
