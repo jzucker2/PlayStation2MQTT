@@ -22,7 +22,7 @@ const checkForServerID = function() {
         console.log(`Generated a new serverID createdUUID: ${createdUUID}`);
         serverStore.set('server_id', createdUUID);
     }
-    console.log(`Checkd and ended up with serverStore getServerID: ${getServerID()}`);
+    console.log(`Checked and ended up with serverStore getServerID: ${getServerID()}`);
 }
 
 exports.serverStore = serverStore;

@@ -81,5 +81,9 @@ services:
       - MQTT_PASSWORD=mqtt_password
     volumes:
       - ./credentials.json:/root/.config/playactor/credentials.json
+      - playstation2mqtt-data:/playstation2mqtt/configs
     stdin_open: true
+
+volumes:
+  playstation2mqtt-data:
 ```
