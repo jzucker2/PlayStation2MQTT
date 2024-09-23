@@ -1,3 +1,5 @@
+'use strict';
+
 const {setPlaystationWake, setPlaystationStandby, getPlaystationInfo} = require("./playstation");
 
 const handleGetPlaystationInfoRequest = async (req, res) => {

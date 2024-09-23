@@ -1,3 +1,5 @@
+'use strict';
+
 const Constants = require("./constants");
 const {generateUUID} = require("./utils");
 const FileStore = require('fs-store').FileStore;

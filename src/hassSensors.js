@@ -1,3 +1,5 @@
+'use strict';
+
 const Constants = require('./constants');
 const {setPlaystationWake, setPlaystationStandby} = require("./playstation");
 
