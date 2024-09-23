@@ -11,6 +11,21 @@ const metricsMiddleware = promBundle({includeMethod: true});
 // actual framework is broken as a module :(
 // const playactor = require('playactor');
 
+const FileStore = require('fs-store').FileStore;
+
+// Create a store
+const serverStore = new FileStore('playstation2mqtt.json');
+
+// Get a value, providing a default
+const serverID = serverStore.get('server_id');
+
+if (!serverID) {
+    // Store a value (will be written to disk asynchronously)
+    serverStore.set('server_id', 7);
+}
+
+console.log(`The server store serverID: ${serverStore.get('server_id')}`);
+
 // Constants
 const PORT = Constants.PORT;
 const HOST = Constants.HOST;
