@@ -150,7 +150,27 @@ class HassDiagnosticSensor extends HassServerSensor {
     }
 
     getStatePayload() {
+        return "foo"
+    }
+}
+
+class HassVersionSensor extends HassDiagnosticSensor {
+    constructor(mqtt) {
+        super(mqtt, "Server Version", "server_version");
+    }
+
+    getStatePayload() {
         return Constants.VERSION
+    }
+}
+
+class HassServerIDSensor extends HassDiagnosticSensor {
+    constructor(mqtt) {
+        super(mqtt, "Server ID", "server_id");
+    }
+
+    getStatePayload() {
+        return serverID;
     }
 }
 
@@ -220,6 +240,7 @@ class HassPublishAllStatesButton extends HassServerSensor {
     }
 }
 
-exports.HassDiagnosticSensor = HassDiagnosticSensor;
+exports.HassVersionSensor = HassVersionSensor;
+exports.HassServerIDSensor = HassServerIDSensor;
 exports.HassSwitch = HassSwitch;
 exports.HassPublishAllStatesButton = HassPublishAllStatesButton;
