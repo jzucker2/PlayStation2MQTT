@@ -2,8 +2,9 @@
 
 const Constants = require('./constants');
 const {setPlaystationWake, setPlaystationStandby} = require("./playstation");
+const { getOrCreateServerID } = require("./serverStore");
 
-const serverID = Constants.serverID;
+const serverID = getOrCreateServerID();
 
 const getDevicePayload = (identifier, deviceName, manufacturer, viaDevice= undefined) => {
     const finalPayload = {
