@@ -7,13 +7,14 @@ const { getOrCreateServerID, getOrCreatePlayStationID } = require("./serverStore
 const serverID = getOrCreateServerID();
 const playstationID = getOrCreatePlayStationID();
 
-const getDevicePayload = (identifier, deviceName, manufacturer, viaDevice= undefined) => {
+const getDevicePayload = (identifier, deviceName, model, manufacturer, viaDevice= undefined) => {
     const finalPayload = {
         "identifiers": [
             identifier,
         ],
         "name": deviceName,
         "manufacturer": manufacturer,
+        "model": model,
     };
     if (viaDevice) {
         finalPayload["via_device"] = viaDevice;
@@ -22,11 +23,11 @@ const getDevicePayload = (identifier, deviceName, manufacturer, viaDevice= undef
 }
 
 const getServerDevicePayload = () => {
-    return getDevicePayload(serverID, "PlayStation2MQTT Bridge", Constants.APP_NAME);
+    return getDevicePayload(serverID, "PlayStation2MQTT Bridge", "Bridge", Constants.APP_NAME);
 }
 
 const getPlaystationDevicePayload = () => {
-    return getDevicePayload(playstationID, "PlayStation", "Sony", serverID);
+    return getDevicePayload(playstationID, "PlayStation", "PlayStation", "Sony", serverID);
 }
 
 class HassBase {
