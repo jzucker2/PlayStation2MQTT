@@ -11,6 +11,7 @@ module.exports = {
     MQTT_DISCOVERY_PREFIX: process.env.MQTT_DISCOVERY_PREFIX || 'homeassistant',
     SERVER_NAME: process.env.SERVER_NAME || 'dev',
     NODE_ID: process.env.NODE_ID || 'playstation2mqtt',
+    VERSION: '0.7.0',
 
     POWER_DEVICE_CLASS: 'power',
     POWER_SWITCH_DEVICE_CLASS: 'switch',
