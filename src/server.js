@@ -8,20 +8,23 @@ const Constants = require('./constants');
 const { HassSwitch, HassDiagnosticSensor } = require("./hassSensors");
 const { handleGetPlaystationInfoRequest, handleStandbyPlaystationRequest, handleWakePlaystationRequest } = require("./httpHandlers");
 const metricsMiddleware = promBundle({includeMethod: true});
+const { generateUUID } = require("./utils");
 // actual framework is broken as a module :(
 // const playactor = require('playactor');
 
 const FileStore = require('fs-store').FileStore;
 
 // Create a store
-const serverStore = new FileStore('playstation2mqtt.json');
+const serverStore = new FileStore();
 
 // Get a value, providing a default
 const serverID = serverStore.get('server_id');
 
 if (!serverID) {
     // Store a value (will be written to disk asynchronously)
-    serverStore.set('server_id', 7);
+    const createdUUID = generateUUID(5);
+    console.log(`Generated a new serverID createdUUID: ${createdUUID}`);
+    serverStore.set('server_id', createdUUID);
 }
 
 console.log(`The server store serverID: ${serverStore.get('server_id')}`);

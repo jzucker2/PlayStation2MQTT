@@ -19,4 +19,5 @@ services:
       - NODE_ID=${NODE_ID}
     volumes:
       - ./credentials.json:/root/.config/playactor/credentials.json
+      - /playstation2mqtt/configs:/configs
     stdin_open: true

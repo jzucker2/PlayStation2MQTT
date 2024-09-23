@@ -1,4 +1,5 @@
 # ignore the playstation credentials file
+configs/
 credentials.json
 .tool-versions
 .idea

@@ -4,3 +4,5 @@ build
 Dockerfile
 Dockerfile.prod
 npm-debug.log
+credentials.json
+configs/
