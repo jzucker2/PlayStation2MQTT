@@ -5,7 +5,7 @@ const promBundle = require("express-prom-bundle");
 const bodyParser = require('body-parser');
 const mqtt = require("mqtt");
 const Constants = require('./constants');
-const { HassSwitch, HassDiagnosticSensor } = require("./hassSensors");
+const { HassSwitch, HassDiagnosticSensor, HassPublishAllStatesButton } = require("./hassSensors");
 const { handleGetPlaystationInfoRequest, handleStandbyPlaystationRequest, handleWakePlaystationRequest } = require("./httpHandlers");
 const metricsMiddleware = promBundle({includeMethod: true});
 // actual framework is broken as a module :(
@@ -60,18 +60,23 @@ console.debug(`Running on http://${HOST}:${PORT}`);
 // MQTT implementation stuff here
 const playstationSwitch = new HassSwitch(client);
 const serverSensor = new HassDiagnosticSensor(client, "Server Version", "server_version");
+const publishAllStatesButton = new HassPublishAllStatesButton(client);
 
 client.on("connect", () => {
     console.debug('MQTT Connected');
 
     playstationSwitch.publishDiscoveryMessage();
     serverSensor.publishDiscoveryMessage();
+    publishAllStatesButton.publishDiscoveryMessage();
     serverSensor.publishState();
-    const commandTopic = playstationSwitch.getCommandTopic()
-    client.subscribe(commandTopic, (err) => {
-        console.debug(`Subscribed to commandTopic '${commandTopic}'`);
+    const allSubscribedTopics = [
+        playstationSwitch.getCommandTopic(),
+        publishAllStatesButton.getCommandTopic(),
+    ];
+    client.subscribe(allSubscribedTopics, (err) => {
+        console.debug(`Subscribed to allSubscribedTopics '${allSubscribedTopics}'`);
         if (err) {
-            console.error(`Subscribed to commandTopic: ${commandTopic} err => '${err}'`);
+            console.error(`Subscribe error to allSubscribedTopics: ${allSubscribedTopics} with err => '${err}'`);
         }
     });
 });
@@ -81,4 +86,6 @@ client.on("message", async(topic, payload) => {
     const message = payload.toString();
     console.debug('Received Message:', topic, message);
     await playstationSwitch.handleMessage(topic, message);
+    await publishAllStatesButton.handleMessage(topic, message);
+    console.debug('Done processing all mqtt messages: ', topic, message);
 });
