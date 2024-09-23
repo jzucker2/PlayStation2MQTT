@@ -8,7 +8,6 @@ const Constants = require('./constants');
 const { HassSwitch, HassDiagnosticSensor } = require("./hassSensors");
 const { handleGetPlaystationInfoRequest, handleStandbyPlaystationRequest, handleWakePlaystationRequest } = require("./httpHandlers");
 const metricsMiddleware = promBundle({includeMethod: true});
-const { getOrCreateServerID } = require("./serverStore")
 // actual framework is broken as a module :(
 // const playactor = require('playactor');
 
@@ -28,9 +27,6 @@ app.use(metricsMiddleware);
 // https://stackoverflow.com/questions/10005939/how-do-i-consume-the-json-post-data-in-an-express-application
 // parse application/json
 app.use(bodyParser.json());
-
-// check for serverID
-getOrCreateServerID();
 
 // simple route
 app.get('/', (req, res) => {

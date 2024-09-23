@@ -2,7 +2,8 @@
 
 const Constants = require('./constants');
 const {setPlaystationWake, setPlaystationStandby} = require("./playstation");
-const { getOrCreateServerID } = require("./serverStore");
+
+const serverID = Constants.serverID;
 
 const getDevicePayload = (identifier, deviceName, manufacturer, viaDevice= undefined) => {
     const finalPayload = {
@@ -17,8 +18,6 @@ const getDevicePayload = (identifier, deviceName, manufacturer, viaDevice= undef
     }
     return finalPayload;
 }
-
-const serverID = getOrCreateServerID();
 
 const getServerDevicePayload = () => {
     return getDevicePayload(serverID, "PlayStation2MQTT Bridge", Constants.APP_NAME);
@@ -63,7 +62,7 @@ class HassBase {
         if (!startingString) {
             startingString = this.sensorType;
         }
-        return `${startingString}${this.objectID}${this.identifier}`;
+        return `${serverID}${startingString}${this.objectID}${this.identifier}`;
     }
 
     getObjectID() {

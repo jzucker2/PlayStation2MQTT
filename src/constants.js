@@ -1,6 +1,7 @@
 'use strict';
 
 const process = require('process');
+const { getOrCreateServerID } = require("./serverStore");
 
 module.exports = {
     PS5_IP_ADDRESS: process.env.PS5_IP_ADDRESS || '10.0.1.100',
@@ -35,6 +36,11 @@ module.exports = {
         delete this.appURL;
         const finalURL = `http://${this.APP_URL_HOST}:${this.PORT}`;
         return this.appURL = finalURL;
+    },
+    get serverID() {
+        delete this.serverID;
+        const finalServerID = getOrCreateServerID();
+        return this.serverID = finalServerID;
     },
     get originPayload() {
         delete this.originPayload;
