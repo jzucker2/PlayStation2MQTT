@@ -5,8 +5,8 @@ const promBundle = require("express-prom-bundle");
 const bodyParser = require('body-parser');
 const mqtt = require("mqtt");
 const Constants = require('./constants');
-const { HassSwitch, HassDiagnosticSensor} = require("./hassSensors");
-const { setPlaystationWake, setPlaystationStandby, getPlaystationInfo } = require("./playstation");
+const { HassSwitch, HassDiagnosticSensor } = require("./hassSensors");
+const { handleGetPlaystationInfoRequest, handleStandbyPlaystationRequest, handleWakePlaystationRequest } = require("./httpHandlers");
 const metricsMiddleware = promBundle({includeMethod: true});
 // actual framework is broken as a module :(
 // const playactor = require('playactor');
@@ -43,61 +43,15 @@ app.get('/-/health', async(req, res) => {
 
 // get
 app.get('/playactor/ps5/:ps5_ip', async(req, res) => {
-    // cool tutorial
-    // https://zellwk.com/blog/async-await-express/
-    const { ps5_ip } = req.params;
-    console.debug(`server info starting with ip: ${ps5_ip}`);
-
-    try {
-        const results = await getPlaystationInfo(ps5_ip);
-        console.debug(`server info got results ===> ${results}`);
-        return res.json(results);
-    } catch (e) {
-        console.error(`server info returning error --> ${e.toString()}`);
-        return res.status(404).json({
-            'message': e.toString()
-        });
-    }
+    return await handleGetPlaystationInfoRequest(req, res);
 });
 
 app.get('/playactor/ps5/:ps5_ip/wake', async(req, res) => {
-    // cool tutorial
-    // https://zellwk.com/blog/async-await-express/
-    const { ps5_ip } = req.params;
-    console.debug(`server wake starting with ip: ${ps5_ip}`);
-
-    try {
-        const results = await setPlaystationWake(ps5_ip);
-        console.debug(`server wake got results ===> ${results}`);
-        return res.json({
-            'message': 'ps5 awakened'
-        });
-    } catch (e) {
-        console.error(`server wake returning error --> ${e.toString()}`);
-        return res.status(404).json({
-            'message': e.toString()
-        });
-    }
+    return await handleWakePlaystationRequest(req, res);
 });
 
 app.get('/playactor/ps5/:ps5_ip/standby', async(req, res) => {
-    // cool tutorial
-    // https://zellwk.com/blog/async-await-express/
-    const { ps5_ip } = req.params;
-    console.debug(`server standby starting with ip: ${ps5_ip}`);
-
-    try {
-        const results = await setPlaystationStandby(ps5_ip);
-        console.debug(`server standby got results ===> ${results}`);
-        return res.json({
-            'message': 'ps5 asleep'
-        });
-    } catch (e) {
-        console.error(`server standby returning error --> ${e.toString()}`);
-        return res.status(404).json({
-            'message': e.toString()
-        });
-    }
+    return await handleStandbyPlaystationRequest(req, res);
 });
 
 app.listen(PORT, HOST);

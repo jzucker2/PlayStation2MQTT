@@ -1,13 +1,6 @@
 const Constants = require('./constants');
 const {setPlaystationWake, setPlaystationStandby} = require("./playstation");
 
-// <discovery_prefix>/<component>/[<node_id>/]<object_id>/config
-// homeassistant/switch/playstation2mqtt/playstation/config
-// homeassistant/switch/playstation2mqtt/playstation/state
-// homeassistant/switch/playstation2mqtt/playstation/set
-// homeassistant/switch/playstation/config
-// homeassistant/switch/playstation/state
-// homeassistant/switch/playstation/set
 class HassBase {
     constructor(mqtt, sensorType, name, objectID, deviceClass = undefined, includeCommandTopic = false, entityCategory = undefined) {
         this.mqtt = mqtt;
@@ -16,6 +9,7 @@ class HassBase {
         this.deviceClass = deviceClass;
         this.identifier = Constants.SERVER_NAME;
         this.deviceName = "Playstation";
+        this.serverDevice = Constants.SERVER_NAME;
         this.name = name;
         this.sensorType = sensorType;
         this.playstationIP = Constants.PS5_IP_ADDRESS;
@@ -25,7 +19,8 @@ class HassBase {
     }
 
     getBaseTopic() {
-        // return `homeassistant/switch/${this.nodeID}/${this.objectID}`
+        // `homeassistant/switch/${this.nodeID}/${this.objectID}`
+        // `homeassistant/switch/playstation2mqtt/${this.objectID}`
         return `${this.discoveryPrefix}/${this.sensorType}/${this.nodeID}/${this.objectID}`;
     }
 
@@ -50,20 +45,28 @@ class HassBase {
         return `${this.objectID}_${this.sensorType}`;
     }
 
-    getConfigPayload() {
+    getDevicePayload(includeViaDevice=false) {
+        const finalPayload = {
+            "identifiers": [
+                this.identifier,
+            ],
+            "name": this.deviceName,
+            "manufacturer": "Sony",
+        };
+        if (includeViaDevice) {
+            finalPayload["via_device"] = this.serverDevice;
+        }
+        return finalPayload;
+    }
+
+    getConfigPayload(isServer=false) {
         const basePayload = {
             "name": this.name,
             "object_id": this.getObjectID(),
             "state_topic": this.getStateTopic(),
             "unique_id": this.getUniqueID(),
             "origin": this.getOriginPayload(),
-            "device": {
-                "identifiers": [
-                    this.identifier,
-                ],
-                "name": this.deviceName,
-                "manufacturer": "Sony",
-            },
+            "device": this.getDevicePayload(),
         };
         if (this.deviceClass) {
             basePayload["device_class"] = this.deviceClass;
@@ -102,6 +105,14 @@ class HassBase {
     getCommandTopic() {
         return `${this.getBaseTopic()}/set`;
     }
+
+    getStatePayload() {
+        return "replace_me"
+    }
+
+    publishState() {
+        this.mqtt.publish(this.getStateTopic(), this.getStatePayload());
+    }
 }
 
 class HassDiagnosticSensor extends HassBase {
@@ -110,8 +121,8 @@ class HassDiagnosticSensor extends HassBase {
         super(mqtt, sensorType, name, objectID, deviceClass, false, 'diagnostic');
     }
 
-    publishState() {
-        this.mqtt.publish(this.getStateTopic(), Constants.VERSION);
+    getStatePayload() {
+        return Constants.VERSION
     }
 }
 

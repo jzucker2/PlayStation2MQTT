@@ -24,6 +24,16 @@ curl http://localhost:4242/playactor/ps5/10.0.1.100/standby
 
 ### Implementation Details
 
+```
+// <discovery_prefix>/<component>/[<node_id>/]<object_id>/config
+// homeassistant/switch/playstation2mqtt/playstation/config
+// homeassistant/switch/playstation2mqtt/playstation/state
+// homeassistant/switch/playstation2mqtt/playstation/set
+// homeassistant/switch/playstation/config
+// homeassistant/switch/playstation/state
+// homeassistant/switch/playstation/set
+```
+
 ```json
 {
    "name":null,
