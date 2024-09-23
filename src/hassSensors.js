@@ -32,7 +32,7 @@ const getPlaystationDevicePayload = () => {
 }
 
 class HassBase {
-    constructor(mqtt, sensorType, name, objectID, deviceClass = undefined, includeCommandTopic = false, entityCategory = undefined) {
+    constructor(mqtt, sensorType, name, objectID, deviceClass = undefined, includeStateTopic = false, includeCommandTopic = false, entityCategory = undefined) {
         this.mqtt = mqtt;
         this.nodeID = Constants.NODE_ID;
         this.objectID = objectID;
@@ -42,6 +42,7 @@ class HassBase {
         this.sensorType = sensorType;
         this.playstationIP = Constants.PS5_IP_ADDRESS;
         this.discoveryPrefix = Constants.MQTT_DISCOVERY_PREFIX;
+        this.includeStateTopic = includeStateTopic;
         this.includeCommandTopic = includeCommandTopic;
         this.entityCategory = entityCategory;
     }
@@ -81,11 +82,13 @@ class HassBase {
         const basePayload = {
             "name": this.name,
             "object_id": this.getObjectID(),
-            "state_topic": this.getStateTopic(),
             "unique_id": this.getUniqueID(),
             "origin": this.getOriginPayload(),
             "device": this.getDevicePayload(),
         };
+        if (this.includeStateTopic) {
+            basePayload["state_topic"] = this.getStateTopic();
+        }
         if (this.deviceClass) {
             basePayload["device_class"] = this.deviceClass;
         }
@@ -133,14 +136,16 @@ class HassBase {
     }
 }
 
-class HassDiagnosticSensor extends HassBase {
-    constructor(mqtt, name, objectID, deviceClass = undefined) {
-        const sensorType = "sensor";
-        super(mqtt, sensorType, name, objectID, deviceClass, false, 'diagnostic');
-    }
-
+class HassServerSensor extends HassBase {
     getDevicePayload() {
         return getServerDevicePayload();
+    }
+}
+
+class HassDiagnosticSensor extends HassServerSensor {
+    constructor(mqtt, name, objectID, deviceClass = undefined) {
+        const sensorType = "sensor";
+        super(mqtt, sensorType, name, objectID, deviceClass, true, false, 'diagnostic');
     }
 
     getStatePayload() {
@@ -151,7 +156,7 @@ class HassDiagnosticSensor extends HassBase {
 class HassSwitch extends HassBase {
     constructor(mqtt) {
         const sensorType = "switch";
-        super(mqtt, sensorType, "Playstation Power", "power", sensorType,true);
+        super(mqtt, sensorType, "Playstation Power", "power", sensorType,true, true);
         this.onPayload = "ON";
         this.offPayload = "OFF";
     }
@@ -192,5 +197,28 @@ class HassSwitch extends HassBase {
     }
 }
 
+class HassPublishAllStatesButton extends HassServerSensor {
+    constructor(mqtt) {
+        const sensorType = "button";
+        super(mqtt, sensorType, "Publish All States", "publish_all_states", undefined,false, true);
+        this.pressPayload = "PRESS";
+    }
+
+    getDevicePayload() {
+        return getServerDevicePayload();
+    }
+
+    handleMessage = async(topic, message, publishAction) => {
+        if (topic === this.getCommandTopic()) {
+            console.debug('mqtt switch got bridge publish all states message: ', message);
+            if (message === this.pressPayload) {
+                publishAction();
+            }
+        }
+        return Promise.resolve();
+    }
+}
+
 exports.HassDiagnosticSensor = HassDiagnosticSensor;
 exports.HassSwitch = HassSwitch;
+exports.HassPublishAllStatesButton = HassPublishAllStatesButton;
