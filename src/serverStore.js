@@ -1,5 +1,6 @@
 'use strict';
 
+const { logger } = require("./logging");
 const Constants = require("./constants");
 const { getServerUUID, getPlayStationUUID } = require("./utils");
 const FileStore = require('fs-store').FileStore;
@@ -24,11 +25,11 @@ const getOrCreateServerID = function() {
     if (!serverID) {
         // Store a value (will be written to disk asynchronously)
         const createdUUID = getServerUUID();
-        console.log(`Generated a new serverID createdUUID: ${createdUUID}`);
+        logger.debug(`Generated a new serverID createdUUID: ${createdUUID}`);
         serverStore.set(SERVER_ID_KEY, createdUUID);
     }
     const fetchedID = getServerID();
-    console.log(`Checked and ended up with serverStore fetchedID: ${fetchedID}`);
+    logger.debug(`Checked and ended up with serverStore fetchedID: ${fetchedID}`);
     return fetchedID;
 }
 
@@ -38,11 +39,11 @@ const getOrCreatePlayStationID = function() {
     if (!playStationID) {
         // Store a value (will be written to disk asynchronously)
         const createdUUID = getPlayStationUUID();
-        console.log(`Generated a new playstationID createdUUID: ${createdUUID}`);
+        logger.debug(`Generated a new playstationID createdUUID: ${createdUUID}`);
         serverStore.set(PLAYSTATION_ID_KEY, createdUUID);
     }
     const fetchedID = getPlayStationID();
-    console.log(`Checked and ended up with serverStore fetchedID: ${fetchedID}`);
+    logger.debug(`Checked and ended up with serverStore fetchedID: ${fetchedID}`);
     return fetchedID;
 }
 

@@ -1,5 +1,6 @@
 'use strict';
 
+const { logger } = require("./logging");
 const Constants = require('./constants');
 const {setPlaystationWake, setPlaystationStandby} = require("./playstation");
 const { getOrCreateServerID, getOrCreatePlayStationID } = require("./serverStore");
@@ -103,7 +104,7 @@ class HassBase {
 
     getConfigPayloadString() {
         const finalPayload = this.getConfigPayload();
-        console.debug(finalPayload);
+        logger.debug(finalPayload);
         return JSON.stringify(finalPayload);
     }
 
@@ -175,22 +176,22 @@ class HassSwitch extends HassBase {
 
     handleMessage = async(topic, message) => {
         if (topic === this.getCommandTopic()) {
-            console.debug('mqtt switch got playstation switch message: ', message);
+            logger.debug('mqtt switch got playstation switch message: ', message);
             if (this.getIsOnPayload(message)) {
-                console.debug('mqtt switch => Turn on playstation');
+                logger.debug('mqtt switch => Turn on playstation');
                 try {
                     const results = await setPlaystationWake(this.playstationIP);
-                    console.debug(`mqtt switch wake got results ===> ${results}`);
+                    logger.debug(`mqtt switch wake got results ===> ${results}`);
                 } catch (e) {
-                    console.error(`mqtt switch wake returning error --> ${e.toString()}`);
+                    logger.error(`mqtt switch wake returning error --> ${e.toString()}`);
                 }
             } else {
-                console.debug('mqtt switch => Turn off playstation');
+                logger.debug('mqtt switch => Turn off playstation');
                 try {
                     const results = await setPlaystationStandby(this.playstationIP);
-                    console.debug(`mqtt switch standby got results ===> ${results}`);
+                    logger.debug(`mqtt switch standby got results ===> ${results}`);
                 } catch (e) {
-                    console.error(`mqtt switch standby returning error --> ${e.toString()}`);
+                    logger.error(`mqtt switch standby returning error --> ${e.toString()}`);
                 }
             }
         }
@@ -210,7 +211,7 @@ class HassPublishAllStatesButton extends HassServerSensor {
 
     handleMessage = async(topic, message, publishAction) => {
         if (topic === this.getCommandTopic()) {
-            console.debug('mqtt switch got bridge publish all states message: ', message);
+            logger.debug('mqtt switch got bridge publish all states message: ', message);
             if (message === this.pressPayload) {
                 publishAction();
             }

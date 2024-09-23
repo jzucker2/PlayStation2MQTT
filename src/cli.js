@@ -1,6 +1,8 @@
 'use strict';
 
-const spawn = require('await-spawn');
+const util = require('node:util');
+const exec = util.promisify(require('node:child_process').exec);
+const { logger } = require("./logging");
 
 function ResponseParseException(value) {
     this.value = value;
@@ -29,30 +31,26 @@ const formatDeviceStatusResponse = (commandLineOutput) => {
 }
 
 // https://www.npmjs.com/package/await-spawn
-function CLIException(spawnException) {
-    this.spawnException = spawnException;
+function CLIException(processException) {
+    this.processException = processException;
     this.toString = function() {
-        return `${this.spawnException.code} => ${this.spawnException.stderr}`;
+        return `${this.processException.code} => ${this.processException.stderr}`;
     };
-    this.code = this.spawnException.code;
+    this.code = this.processException.code;
+}
+
+const getCommandString = (scriptName, scriptArgs) => {
+    return `${scriptName} ${scriptArgs.join(' ')}`;
 }
 
 const executeCLIScript = async (scriptName, scriptArgs) => {
-    // https://www.npmjs.com/package/await-spawn
-    try {
-        // playactor browse --timeout 10000
-        console.debug(`executeCLIScript: ${scriptName} with args: ${scriptArgs}`);
-        const result = await spawn(scriptName, scriptArgs);
-        return result.stdout.toString();
-    } catch (e) {
-        // console.error(`stdout: ${e.stdout.toString()}`);
-        // console.error(`stderr: ${e.stderr.toString()}`);
-        console.error(`got error code: ${e.code}`);
-        if (e.code === 1) {
-            return e.stdout.toString();
-        }
-        throw new CLIException(e);
-    }
+    // playactor browse --timeout 10000
+    logger.debug(`executeCLIScript: ${scriptName} with args: ${scriptArgs}`);
+    const commandString = getCommandString(scriptName, scriptArgs);
+    const { stdout, stderr } = await exec(commandString);
+    logger.info('process stdout:', stdout);
+    logger.error('process stderr:', stderr);
+    return stdout.toString();
 }
 
 exports.CLIException = CLIException;

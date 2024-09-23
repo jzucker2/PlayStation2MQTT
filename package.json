@@ -18,12 +18,12 @@
   },
   "homepage": "https://github.com/jzucker2/PlayStation2MQTT#readme",
   "dependencies": {
-    "await-spawn": "^4.0.2",
     "body-parser": "^1.20.1",
     "express": "^4.18.2",
     "express-prom-bundle": "^6.5.0",
     "fs-store": "^0.3.3",
     "mqtt": "^5.10.1",
+    "pino-http": "^10.3.0",
     "playactor": "^0.4.1",
     "prom-client": "^14.1.0"
   },
