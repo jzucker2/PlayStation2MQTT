@@ -14,6 +14,7 @@ const metricsMiddleware = promBundle({includeMethod: true});
 // Constants
 const PORT = Constants.PORT;
 const HOST = Constants.HOST;
+const SERVER_NAME = Constants.SERVER_NAME;
 
 // MQTT
 const client = mqtt.connect(Constants.MQTT_BROKER_URL, Constants.mqttConnectionOptions);
@@ -106,10 +107,9 @@ console.log(`Running on http://${HOST}:${PORT}`);
 // MQTT implementation stuff here
 const subscribeTopic = "playstation";
 
-const nodeID = "playstation2mqtt";
+const nodeID = Constants.NODE_ID;
 const objectID = "playstation";
-const uniqueID = "foobar1"
-const playstationSwitch = new HassSwitch(nodeID, objectID, uniqueID, Constants.PS5_IP_ADDRESS);
+const playstationSwitch = new HassSwitch(nodeID, objectID, SERVER_NAME, Constants.PS5_IP_ADDRESS);
 const playstationIP = playstationSwitch.playstationIP;
 const playstationDiscoveryTopic = playstationSwitch.getConfigTopic();
 const playstationDiscoveryPayload = playstationSwitch.getConfigPayloadString()

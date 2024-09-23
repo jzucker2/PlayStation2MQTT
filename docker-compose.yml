@@ -15,6 +15,8 @@ services:
       - MQTT_BROKER_URL=${MQTT_BROKER_URL}
       - MQTT_USERNAME=${MQTT_USERNAME}
       - MQTT_PASSWORD=${MQTT_PASSWORD}
+      - SERVER_NAME=${SERVER_NAME}
+      - NODE_ID=${NODE_ID}
     volumes:
       - ./credentials.json:/root/.config/playactor/credentials.json
     stdin_open: true

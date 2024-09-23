@@ -1,5 +1,5 @@
 const spawn = require('await-spawn');
-const { executeCLIScript } = require("./cli");
+const { executeCLIScript, formatDeviceStatusResponse } = require("./cli");
 
 const STANDBY_STATUS = 'STANDBY'; // eslint-disable-line no-unused-vars
 
