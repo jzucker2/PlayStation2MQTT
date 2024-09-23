@@ -5,7 +5,7 @@ const promBundle = require("express-prom-bundle");
 const bodyParser = require('body-parser');
 const mqtt = require("mqtt");
 const Constants = require('./constants');
-const HassSwitch = require("./hassSwitch");
+const { HassSwitch } = require("./hassSwitch");
 const { setPlaystationWake, setPlaystationStandby, getPlaystationInfo } = require("./playstation");
 const metricsMiddleware = promBundle({includeMethod: true});
 // actual framework is broken as a module :(

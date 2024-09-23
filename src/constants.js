@@ -12,6 +12,9 @@ module.exports = {
     SERVER_NAME: process.env.SERVER_NAME || 'dev',
     NODE_ID: process.env.NODE_ID || 'playstation2mqtt',
 
+    POWER_DEVICE_CLASS: 'power',
+    POWER_SWITCH_DEVICE_CLASS: 'switch',
+
     get mqttConnectionOptions() {
         delete this.mqttConnectionOptions;
         const connectionOptions = {

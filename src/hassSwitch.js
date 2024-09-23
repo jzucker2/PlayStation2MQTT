@@ -7,42 +7,50 @@ const Constants = require('./constants');
 // homeassistant/switch/playstation/config
 // homeassistant/switch/playstation/state
 // homeassistant/switch/playstation/set
-class HassSwitch {
-    constructor(nodeID, objectID, uniqueID, playstationIP) {
+class HassBase {
+    constructor(sensorType, deviceClass, nodeID, objectID, identifier, playstationIP, includeCommandTopic = false) {
         this.nodeID = nodeID;
         this.objectID = objectID;
-        this.uniqueID = uniqueID;
+        this.deviceClass = deviceClass;
+        this.identifier = identifier;
         this.name = "Playstation";
+        this.sensorType = sensorType;
         this.playstationIP = playstationIP;
         this.discoveryPrefix = Constants.MQTT_DISCOVERY_PREFIX;
-        this.onPayload = "ON";
-        this.offPayload = "OFF";
+        this.includeCommandTopic = includeCommandTopic;
     }
 
     getBaseTopic() {
         // return `homeassistant/switch/${this.nodeID}/${this.objectID}`
-        return `${this.discoveryPrefix}/switch/${this.nodeID}/${this.objectID}`
+        return `${this.discoveryPrefix}/${this.sensorType}/${this.nodeID}/${this.objectID}`
     }
 
     getConfigTopic() {
         return `${this.getBaseTopic()}/config`;
     }
 
+    getUniqueID() {
+        return `${this.deviceClass}${this.identifier}`;
+    }
+
     getConfigPayload() {
-        return {
+        const basePayload = {
             "name": this.name,
-            "command_topic": this.getCommandTopic(),
+            "device_class": this.deviceClass,
             "state_topic": this.getStateTopic(),
-            "unique_id": this.uniqueID,
+            "unique_id": this.getUniqueID(),
             "device": {
                 "identifiers": [
-                    this.uniqueID,
+                    this.identifier,
                 ],
                 "name": this.name,
                 "manufacturer": "Sony",
-
             },
         };
+        if (this.includeCommandTopic) {
+            basePayload["command_topic"] = this.getCommandTopic();
+        }
+        return basePayload;
     }
 
     getConfigPayloadString() {
@@ -58,6 +66,15 @@ class HassSwitch {
     getCommandTopic() {
         return `${this.getBaseTopic()}/set`;
     }
+}
+
+class HassSwitch extends HassBase {
+    constructor(nodeID, objectID, identifier, playstationIP) {
+        const sensorType = "switch";
+        super(sensorType, sensorType, nodeID, objectID, identifier, playstationIP, true);
+        this.onPayload = "ON";
+        this.offPayload = "OFF";
+    }
 
     getIsOnPayload = (message) => {
         return message === this.onPayload;
@@ -68,4 +85,4 @@ class HassSwitch {
     }
 }
 
-module.exports = HassSwitch;
+exports.HassSwitch = HassSwitch;
