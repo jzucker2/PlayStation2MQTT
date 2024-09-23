@@ -3,6 +3,20 @@
 const Constants = require('./constants');
 const {setPlaystationWake, setPlaystationStandby} = require("./playstation");
 
+const getDevicePayload = (identifier, deviceName, manufacturer, viaDevice= undefined) => {
+    const finalPayload = {
+        "identifiers": [
+            identifier,
+        ],
+        "name": deviceName,
+        "manufacturer": manufacturer,
+    };
+    if (viaDevice) {
+        finalPayload["via_device"] = viaDevice;
+    }
+    return finalPayload;
+}
+
 class HassBase {
     constructor(mqtt, sensorType, name, objectID, deviceClass = undefined, includeCommandTopic = false, entityCategory = undefined) {
         this.mqtt = mqtt;
