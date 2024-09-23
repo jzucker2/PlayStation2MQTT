@@ -9,12 +9,12 @@ Sparse info but something here: https://github.com/dhleong/playactor/discussions
 ```
 npm start
 
-curl http://localhost:4242/playactor/ps5/10.0.1.105
+curl http://localhost:4242/playactor/ps5/10.0.1.100
 {"device":"PS5","name":"PS5-241","status":"STANDBY","id":"foo"}
 
-curl http://localhost:4242/playactor/ps5/10.0.1.105/wake
+curl http://localhost:4242/playactor/ps5/10.0.1.100/wake
 
-curl http://localhost:4242/playactor/ps5/10.0.1.105/standby
+curl http://localhost:4242/playactor/ps5/10.0.1.100/standby
 ```
 
 ## MQTT Info
@@ -22,9 +22,34 @@ curl http://localhost:4242/playactor/ps5/10.0.1.105/standby
 * https://www.home-assistant.io/integrations/mqtt/#examples
 * https://www.home-assistant.io/integrations/mqtt/#testing-your-setup
 
+### Implementation Details
+
+```json
+{
+   "name":null,
+   "device_class":"motion",
+   "state_topic":"homeassistant/binary_sensor/garden/state",
+   "unique_id":"motion01ad",
+   "device":{
+      "identifiers":[
+         "01ad"
+      ],
+      "name":"Garden"
+   }
+}
+```
+
 ## Deploy Instructions
 
 First create a `credentials.json` file using ps5-actor and place in same directory.
+
+### Create Credentials
+
+```
+docker compose exec -it playstation2mqtt sh
+```
+
+### Docker Compose
 
 Then create a `docker-compose.yaml` like the following:
 
