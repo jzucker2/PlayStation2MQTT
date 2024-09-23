@@ -9,25 +9,9 @@ const { HassSwitch, HassDiagnosticSensor } = require("./hassSensors");
 const { handleGetPlaystationInfoRequest, handleStandbyPlaystationRequest, handleWakePlaystationRequest } = require("./httpHandlers");
 const metricsMiddleware = promBundle({includeMethod: true});
 const { generateUUID } = require("./utils");
+const { checkForServerID } = require("./serverStore")
 // actual framework is broken as a module :(
 // const playactor = require('playactor');
-
-const FileStore = require('fs-store').FileStore;
-
-// Create a store
-const serverStore = new FileStore(Constants.CONFIG_PATH);
-
-// Get a value, providing a default
-const serverID = serverStore.get('server_id');
-
-if (!serverID) {
-    // Store a value (will be written to disk asynchronously)
-    const createdUUID = generateUUID(5);
-    console.log(`Generated a new serverID createdUUID: ${createdUUID}`);
-    serverStore.set('server_id', createdUUID);
-}
-
-console.log(`The server store serverID: ${serverStore.get('server_id')}`);
 
 // Constants
 const PORT = Constants.PORT;
@@ -45,6 +29,9 @@ app.use(metricsMiddleware);
 // https://stackoverflow.com/questions/10005939/how-do-i-consume-the-json-post-data-in-an-express-application
 // parse application/json
 app.use(bodyParser.json());
+
+// check for serverID
+checkForServerID();
 
 // simple route
 app.get('/', (req, res) => {
