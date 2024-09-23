@@ -104,20 +104,11 @@ app.listen(PORT, HOST);
 console.debug(`Running on http://${HOST}:${PORT}`);
 
 // MQTT implementation stuff here
-const subscribeTopic = "playstation";
-
 const playstationSwitch = new HassSwitch(client);
 const serverSensor = new HassDiagnosticSensor(client, "Server Version", "server_version");
 
 client.on("connect", () => {
     console.debug('MQTT Connected');
-
-    client.subscribe(subscribeTopic, (err) => {
-        console.debug(`Subscribed to subscribeTopic '${subscribeTopic}'`);
-        if (!err) {
-            client.publish(subscribeTopic, "Subscribed mqtt");
-        }
-    });
 
     playstationSwitch.publishDiscoveryMessage();
     serverSensor.publishDiscoveryMessage();
