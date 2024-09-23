@@ -4,6 +4,7 @@ const { logger } = require("./logging");
 const { executeCLIScript, formatDeviceStatusResponse } = require("./cli");
 
 const STANDBY_STATUS = 'STANDBY'; // eslint-disable-line no-unused-vars
+const AWAKE_STATUS = 'AWAKE'; // eslint-disable-line no-unused-vars
 
 // https://www.npmjs.com/package/await-spawn
 function PlayactorException(cliException) {
@@ -22,8 +23,6 @@ const executePlayactorScript = async (playactorArgs) => {
         logger.debug(`executePlayactorScript: ${playactorArgs} got result: ${result}`);
         return result;
     } catch (e) {
-        // logger.error(`stdout: ${e.stdout.toString()}`);
-        // logger.error(`stderr: ${e.stderr.toString()}`);
         logger.error(`got error code: ${e.code}`);
         if (e.code === 1) {
             return e.stdout.toString();
