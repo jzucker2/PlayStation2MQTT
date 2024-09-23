@@ -60,7 +60,7 @@ const getPlaystationInfo = async (playstationIP) => {
         const results = await executePlayactorScript(playactorArgs);
         logger.debug(`info got results ===> ${results}`);
         const currentStatus = formatDeviceStatusResponse(results);
-        logger.debug(`info got formatted currentStatus ===> ${currentStatus}`);
+        logger.info(`info got formatted currentStatus ===> ${currentStatus}`);
         return new PlayStationInfo(currentStatus);
     } catch (e) {
         logger.error(`info returning error --> ${e.toString()}`);
