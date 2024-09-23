@@ -5,7 +5,7 @@ const promBundle = require("express-prom-bundle");
 const bodyParser = require('body-parser');
 const mqtt = require("mqtt");
 const Constants = require('./constants');
-const { HassSwitch, HassDiagnosticSensor} = require("./hassSwitch");
+const { HassSwitch, HassDiagnosticSensor} = require("./hassSensors");
 const { setPlaystationWake, setPlaystationStandby, getPlaystationInfo } = require("./playstation");
 const metricsMiddleware = promBundle({includeMethod: true});
 // actual framework is broken as a module :(
@@ -109,8 +109,8 @@ const subscribeTopic = "playstation";
 
 const nodeID = Constants.NODE_ID;
 const objectID = "playstation";
-const playstationSwitch = new HassSwitch(client, nodeID, objectID, SERVER_NAME, Constants.PS5_IP_ADDRESS);
-const serverSensor = new HassDiagnosticSensor(client, "Server Version", nodeID, "version", SERVER_NAME, Constants.PS5_IP_ADDRESS);
+const playstationSwitch = new HassSwitch(client, objectID);
+const serverSensor = new HassDiagnosticSensor(client, "Server Version", "server_version");
 
 client.on("connect", () => {
     console.debug('MQTT Connected');
@@ -124,6 +124,7 @@ client.on("connect", () => {
 
     playstationSwitch.publishDiscoveryMessage();
     serverSensor.publishDiscoveryMessage();
+    serverSensor.publishState();
     const commandTopic = playstationSwitch.getCommandTopic()
     client.subscribe(commandTopic, (err) => {
         console.debug(`Subscribed to commandTopic '${commandTopic}'`);

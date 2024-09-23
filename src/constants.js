@@ -12,6 +12,8 @@ module.exports = {
     SERVER_NAME: process.env.SERVER_NAME || 'dev',
     NODE_ID: process.env.NODE_ID || 'playstation2mqtt',
     VERSION: '0.7.0',
+    APP_URL_HOST: process.env.APP_URL_HOST || `playstation2mqtt.local`,
+    SUPPORT_URL: 'https://github.com/jzucker2/PlayStation2MQTT',
 
     POWER_DEVICE_CLASS: 'power',
     POWER_SWITCH_DEVICE_CLASS: 'switch',
@@ -24,5 +26,19 @@ module.exports = {
             password: this.MQTT_PASSWORD,
         }
         return this.mqttConnectionOptions = connectionOptions;
+    },
+    get appURL() {
+        delete this.appURL;
+        const finalURL = `http://${this.APP_URL_HOST}:${this.PORT}`;
+        return this.appURL = finalURL;
+    },
+    get originPayload() {
+        delete this.originPayload;
+        const finalPayload = {
+            name: "PlayStation2MQTT",
+            sw_version: this.VERSION,
+            support_url: this.SUPPORT_URL,
+        }
+        return this.originPayload = finalPayload;
     },
 };
