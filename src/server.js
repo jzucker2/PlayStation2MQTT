@@ -107,9 +107,7 @@ console.debug(`Running on http://${HOST}:${PORT}`);
 // MQTT implementation stuff here
 const subscribeTopic = "playstation";
 
-const nodeID = Constants.NODE_ID;
-const objectID = "playstation";
-const playstationSwitch = new HassSwitch(client, objectID);
+const playstationSwitch = new HassSwitch(client);
 const serverSensor = new HassDiagnosticSensor(client, "Server Version", "server_version");
 
 client.on("connect", () => {

@@ -116,7 +116,7 @@ class HassDiagnosticSensor extends HassBase {
 }
 
 class HassSwitch extends HassBase {
-    constructor(mqtt, objectID) {
+    constructor(mqtt) {
         const sensorType = "switch";
         super(mqtt, sensorType, "Playstation Power", "power", sensorType,true);
         this.onPayload = "ON";
