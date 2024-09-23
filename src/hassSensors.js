@@ -137,7 +137,7 @@ class HassDiagnosticSensor extends HassBase {
     }
 
     getDevicePayload() {
-        return getDevicePayload();
+        return getServerDevicePayload();
     }
 
     getStatePayload() {
