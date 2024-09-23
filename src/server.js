@@ -62,26 +62,33 @@ const playstationSwitch = new HassSwitch(client);
 const serverSensor = new HassDiagnosticSensor(client, "Server Version", "server_version");
 const publishAllStatesButton = new HassPublishAllStatesButton(client);
 
+const publishAllDiscoveryMessages = () => {
+    console.log("Publish All Discovery Messages");
+    playstationSwitch.publishDiscoveryMessage();
+    serverSensor.publishDiscoveryMessage();
+    publishAllStatesButton.publishDiscoveryMessage();
+}
+
 const publishAllStatesAction = () => {
     console.log("Publish All States");
     serverSensor.publishState();
 }
 
+const allSubscribeTopics = [
+    playstationSwitch.getCommandTopic(),
+    publishAllStatesButton.getCommandTopic(),
+];
+
 client.on("connect", () => {
     console.debug('MQTT Connected');
 
-    playstationSwitch.publishDiscoveryMessage();
-    serverSensor.publishDiscoveryMessage();
-    publishAllStatesButton.publishDiscoveryMessage();
+    publishAllDiscoveryMessages();
     publishAllStatesAction();
-    const allSubscribedTopics = [
-        playstationSwitch.getCommandTopic(),
-        publishAllStatesButton.getCommandTopic(),
-    ];
-    client.subscribe(allSubscribedTopics, (err) => {
-        console.debug(`Subscribed to allSubscribedTopics '${allSubscribedTopics}'`);
+    
+    client.subscribe(allSubscribeTopics, (err) => {
+        console.debug(`Subscribed to allSubscribeTopics '${allSubscribeTopics}'`);
         if (err) {
-            console.error(`Subscribe error to allSubscribedTopics: ${allSubscribedTopics} with err => '${err}'`);
+            console.error(`Subscribe error to allSubscribeTopics: ${allSubscribeTopics} with err => '${err}'`);
         }
     });
 });
