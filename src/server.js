@@ -8,7 +8,6 @@ const Constants = require('./constants');
 const { HassSwitch, HassDiagnosticSensor } = require("./hassSensors");
 const { handleGetPlaystationInfoRequest, handleStandbyPlaystationRequest, handleWakePlaystationRequest } = require("./httpHandlers");
 const metricsMiddleware = promBundle({includeMethod: true});
-const { generateUUID } = require("./utils");
 const { checkForServerID } = require("./serverStore")
 // actual framework is broken as a module :(
 // const playactor = require('playactor');
