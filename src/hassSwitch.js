@@ -9,13 +9,13 @@ const {setPlaystationWake, setPlaystationStandby} = require("./playstation");
 // homeassistant/switch/playstation/state
 // homeassistant/switch/playstation/set
 class HassBase {
-    constructor(mqtt, sensorType, nodeID, objectID, identifier, playstationIP, deviceClass = undefined, includeCommandTopic = false, entityCategory = undefined) {
+    constructor(mqtt, sensorType, name, nodeID, objectID, identifier, playstationIP, deviceClass = undefined, includeCommandTopic = false, entityCategory = undefined) {
         this.mqtt = mqtt;
         this.nodeID = nodeID;
         this.objectID = objectID;
         this.deviceClass = deviceClass;
         this.identifier = identifier;
-        this.name = "Playstation";
+        this.name = name;
         this.sensorType = sensorType;
         this.playstationIP = playstationIP;
         this.discoveryPrefix = Constants.MQTT_DISCOVERY_PREFIX;
@@ -33,12 +33,22 @@ class HassBase {
     }
 
     getUniqueID() {
-        return `${this.deviceClass}${this.identifier}`;
+        // FIXME: needs to always be unique
+        let startingString = this.deviceClass;
+        if (!startingString) {
+            startingString = this.sensorType;
+        }
+        return `${startingString}${this.identifier}`;
+    }
+
+    getObjectID() {
+        return `${this.nodeID}${this.objectID}_${this.sensorType}`;
     }
 
     getConfigPayload() {
         const basePayload = {
             "name": this.name,
+            "object_id": this.getObjectID(),
             "state_topic": this.getStateTopic(),
             "unique_id": this.getUniqueID(),
             "device": {
@@ -50,13 +60,13 @@ class HassBase {
             },
         };
         if (this.deviceClass) {
-            basePayload["device_class"] = deviceClass;
+            basePayload["device_class"] = this.deviceClass;
         }
         if (this.includeCommandTopic) {
             basePayload["command_topic"] = this.getCommandTopic();
         }
         if (this.entityCategory) {
-            basePayload["entity_category"] = entityCategory;
+            basePayload["entity_category"] = this.entityCategory;
         }
         return basePayload;
     }
@@ -88,17 +98,17 @@ class HassBase {
     }
 }
 
-class HassVersionSensor extends HassBase {
-    constructor(mqtt, nodeID, objectID, identifier, playstationIP) {
+class HassDiagnosticSensor extends HassBase {
+    constructor(mqtt, name, nodeID, objectID, identifier, playstationIP, deviceClass = undefined) {
         const sensorType = "sensor";
-        super(mqtt, sensorType, nodeID, objectID, identifier, playstationIP, undefined, false, 'diagnostic');
+        super(mqtt, sensorType, name, nodeID, objectID, identifier, playstationIP, deviceClass, false, 'diagnostic');
     }
 }
 
 class HassSwitch extends HassBase {
     constructor(mqtt, nodeID, objectID, identifier, playstationIP) {
         const sensorType = "switch";
-        super(mqtt, sensorType, nodeID, objectID, identifier, playstationIP, sensorType,true);
+        super(mqtt, sensorType, "Playstation Power", nodeID, objectID, identifier, playstationIP, sensorType,true);
         this.onPayload = "ON";
         this.offPayload = "OFF";
     }
@@ -135,5 +145,5 @@ class HassSwitch extends HassBase {
     }
 }
 
-exports.HassSensor = HassSensor;
+exports.HassDiagnosticSensor = HassDiagnosticSensor;
 exports.HassSwitch = HassSwitch;
