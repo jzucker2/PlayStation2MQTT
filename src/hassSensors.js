@@ -74,7 +74,7 @@ class HassBase {
         return getPlaystationDevicePayload();
     }
 
-    getConfigPayload(devicePayload) {
+    getConfigPayload() {
         const basePayload = {
             "name": this.name,
             "object_id": this.getObjectID(),
