@@ -59,14 +59,14 @@ class HassBase {
         return finalPayload;
     }
 
-    getConfigPayload(isServer=false) {
+    getConfigPayload(isPlaystation=true) {
         const basePayload = {
             "name": this.name,
             "object_id": this.getObjectID(),
             "state_topic": this.getStateTopic(),
             "unique_id": this.getUniqueID(),
             "origin": this.getOriginPayload(),
-            "device": this.getDevicePayload(),
+            "device": this.getDevicePayload(isPlaystation),
         };
         if (this.deviceClass) {
             basePayload["device_class"] = this.deviceClass;

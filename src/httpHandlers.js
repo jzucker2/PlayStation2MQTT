@@ -1,5 +1,4 @@
 const {setPlaystationWake, setPlaystationStandby, getPlaystationInfo} = require("./playstation");
-const {HassSwitch} = require("./hassSensors");
 
 const handleGetPlaystationInfoRequest = async (req, res) => {
     // https://zellwk.com/blog/async-await-express/
