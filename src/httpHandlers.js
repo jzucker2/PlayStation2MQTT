@@ -10,7 +10,7 @@ const handleGetPlaystationInfoRequest = async (req, res) => {
     try {
         const results = await getPlaystationInfo(ps5_ip);
         console.debug(`server info got results ===> ${results}`);
-        return res.json(results);
+        return res.json(results.getInfoDict());
     } catch (e) {
         console.error(`server info returning error --> ${e.toString()}`);
         return res.status(404).json({

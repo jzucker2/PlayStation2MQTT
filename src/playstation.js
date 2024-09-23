@@ -31,6 +31,24 @@ const executePlayactorScript = async (playactorArgs) => {
     }
 }
 
+class PlayStationInfo {
+    constructor(info) {
+        this.device = info['device'];
+        this.name = info['name'];
+        this.status = info['status'];
+        this.id = info['id'];
+    }
+
+    getInfoDict = () => {
+        return {
+            'device': this.device,
+            'name': this.name,
+            'status': this.status,
+            'id': this.id,
+        }
+    }
+}
+
 const getPlaystationInfo = async (playstationIP) => {
     // https://www.npmjs.com/package/await-spawn
     console.debug(`info starting with playstationIP: ${playstationIP}`);
@@ -42,7 +60,7 @@ const getPlaystationInfo = async (playstationIP) => {
         console.debug(`info got results ===> ${results}`);
         const currentStatus = formatDeviceStatusResponse(results);
         console.debug(`info got formatted currentStatus ===> ${currentStatus}`);
-        return currentStatus;
+        return new PlayStationInfo(currentStatus);
     } catch (e) {
         console.error(`info returning error --> ${e.toString()}`);
         throw e;
