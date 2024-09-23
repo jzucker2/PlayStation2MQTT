@@ -15,7 +15,7 @@ const { generateUUID } = require("./utils");
 const FileStore = require('fs-store').FileStore;
 
 // Create a store
-const serverStore = new FileStore();
+const serverStore = new FileStore(Constants.CONFIG_PATH);
 
 // Get a value, providing a default
 const serverID = serverStore.get('server_id');
