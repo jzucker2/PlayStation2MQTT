@@ -22,7 +22,6 @@ module.exports = {
             username: this.MQTT_USERNAME,
             password: this.MQTT_PASSWORD,
         }
-        console.debug(connectionOptions);
         return this.mqttConnectionOptions = connectionOptions;
     },
 };
