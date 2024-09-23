@@ -13,7 +13,7 @@ const getServerID = function() {
     return serverStore.get(SERVER_ID_KEY);
 }
 
-const checkForServerID = function() {
+const getOrCreateServerID = function() {
     const serverID = getServerID();
 
     if (!serverID) {
@@ -23,22 +23,9 @@ const checkForServerID = function() {
         serverStore.set('server_id', createdUUID);
     }
     console.log(`Checked and ended up with serverStore getServerID: ${getServerID()}`);
-}
-
-const getOrCreateServerID = function() {
-    const serverID = getServerID();
-
-    if (!serverID) {
-        // Store a value (will be written to disk asynchronously)
-        const createdUUID = generateUUID(5);
-        console.log(`Generated a new serverID createdUUID: ${createdUUID}`);
-        serverStore.set('server_id', createdUUID);
-    }
-    console.log(`Checked and ended up with serverStore getServerID: ${getServerID()}`);
     return getServerID();
 }
 
 exports.serverStore = serverStore;
 exports.getServerID = getServerID;
-exports.checkForServerID = checkForServerID;
 exports.getOrCreateServerID = getOrCreateServerID;
