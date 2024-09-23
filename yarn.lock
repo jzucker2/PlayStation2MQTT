@@ -1034,6 +1034,11 @@ fs-extra@^9.1.0:
     jsonfile "^6.0.1"
     universalify "^2.0.0"
 
+fs-store@^0.3.3:
+  version "0.3.3"
+  resolved "https://registry.npmjs.org/fs-store/-/fs-store-0.3.3.tgz"
+  integrity sha512-57GaneMYx4cQWqd6gCjHQEDvOR1F8O/WVf9dYTRbU9Ti2GLEMY1p9/4g/sfSzueOfZ+vnguHRRb2H2czt1R3Cw==
+
 fs.realpath@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz"
