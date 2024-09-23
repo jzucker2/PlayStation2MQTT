@@ -14,7 +14,6 @@ const metricsMiddleware = promBundle({includeMethod: true});
 // Constants
 const PORT = Constants.PORT;
 const HOST = Constants.HOST;
-const SERVER_NAME = Constants.SERVER_NAME;
 
 // MQTT
 const client = mqtt.connect(Constants.MQTT_BROKER_URL, Constants.mqttConnectionOptions);
