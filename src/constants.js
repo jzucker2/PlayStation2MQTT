@@ -11,7 +11,7 @@ module.exports = {
     MQTT_DISCOVERY_PREFIX: process.env.MQTT_DISCOVERY_PREFIX || 'homeassistant',
     SERVER_NAME: process.env.SERVER_NAME || 'dev',
     NODE_ID: process.env.NODE_ID || 'playstation2mqtt',
-    VERSION: '0.7.0',
+    VERSION: '0.8.0',
     APP_URL_HOST: process.env.APP_URL_HOST || `playstation2mqtt.local`,
     SUPPORT_URL: 'https://github.com/jzucker2/PlayStation2MQTT',
 
