@@ -12,6 +12,7 @@ module.exports = {
     MQTT_CLIENT_ID: process.env.MQTT_CLIENT_ID || 'playstation2mqtt',
     MQTT_DISCOVERY_PREFIX: process.env.MQTT_DISCOVERY_PREFIX || 'homeassistant',
     SERVER_NAME: process.env.SERVER_NAME || 'dev',
+    APP_NAME: 'PlayStation2MQTT',
     NODE_ID: process.env.NODE_ID || 'playstation2mqtt',
     VERSION: '0.8.0',
     APP_URL_HOST: process.env.APP_URL_HOST || `playstation2mqtt.local`,

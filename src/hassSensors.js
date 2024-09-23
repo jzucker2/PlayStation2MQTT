@@ -2,6 +2,7 @@
 
 const Constants = require('./constants');
 const {setPlaystationWake, setPlaystationStandby} = require("./playstation");
+const { getOrCreateServerID } = require("./serverStore");
 
 const getDevicePayload = (identifier, deviceName, manufacturer, viaDevice= undefined) => {
     const finalPayload = {
@@ -17,6 +18,16 @@ const getDevicePayload = (identifier, deviceName, manufacturer, viaDevice= undef
     return finalPayload;
 }
 
+const serverID = getOrCreateServerID();
+
+const getServerDevicePayload = () => {
+    return getDevicePayload(serverID, "PlayStation2MQTT Bridge", Constants.APP_NAME);
+}
+
+const getPlaystationDevicePayload = () => {
+    return getDevicePayload("bar", "PlayStation", "Sony", serverID);
+}
+
 class HassBase {
     constructor(mqtt, sensorType, name, objectID, deviceClass = undefined, includeCommandTopic = false, entityCategory = undefined) {
         this.mqtt = mqtt;
@@ -24,8 +35,6 @@ class HassBase {
         this.objectID = objectID;
         this.deviceClass = deviceClass;
         this.identifier = Constants.SERVER_NAME;
-        this.deviceName = "Playstation";
-        this.serverDevice = Constants.SERVER_NAME;
         this.name = name;
         this.sensorType = sensorType;
         this.playstationIP = Constants.PS5_IP_ADDRESS;
@@ -61,28 +70,18 @@ class HassBase {
         return `${this.objectID}_${this.sensorType}`;
     }
 
-    getDevicePayload(includeViaDevice=false) {
-        const finalPayload = {
-            "identifiers": [
-                this.identifier,
-            ],
-            "name": this.deviceName,
-            "manufacturer": "Sony",
-        };
-        if (includeViaDevice) {
-            finalPayload["via_device"] = this.serverDevice;
-        }
-        return finalPayload;
+    getDevicePayload() {
+        return getPlaystationDevicePayload();
     }
 
-    getConfigPayload(isPlaystation=true) {
+    getConfigPayload(devicePayload) {
         const basePayload = {
             "name": this.name,
             "object_id": this.getObjectID(),
             "state_topic": this.getStateTopic(),
             "unique_id": this.getUniqueID(),
             "origin": this.getOriginPayload(),
-            "device": this.getDevicePayload(isPlaystation),
+            "device": this.getDevicePayload(),
         };
         if (this.deviceClass) {
             basePayload["device_class"] = this.deviceClass;
@@ -137,6 +136,10 @@ class HassDiagnosticSensor extends HassBase {
         super(mqtt, sensorType, name, objectID, deviceClass, false, 'diagnostic');
     }
 
+    getDevicePayload() {
+        return getDevicePayload();
+    }
+
     getStatePayload() {
         return Constants.VERSION
     }
@@ -148,6 +151,10 @@ class HassSwitch extends HassBase {
         super(mqtt, sensorType, "Playstation Power", "power", sensorType,true);
         this.onPayload = "ON";
         this.offPayload = "OFF";
+    }
+
+    getDevicePayload() {
+        return getPlaystationDevicePayload();
     }
 
     getIsOnPayload = (message) => {
