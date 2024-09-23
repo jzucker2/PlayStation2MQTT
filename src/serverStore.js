@@ -1,16 +1,21 @@
 'use strict';
 
 const Constants = require("./constants");
-const {getServerUUID} = require("./utils");
+const { getServerUUID, getPlayStationUUID } = require("./utils");
 const FileStore = require('fs-store').FileStore;
 
 // Create a store
 const serverStore = new FileStore(Constants.CONFIG_PATH);
 
 const SERVER_ID_KEY = 'server_id';
+const PLAYSTATION_ID_KEY = 'playstation_id';
 
 const getServerID = function() {
     return serverStore.get(SERVER_ID_KEY);
+}
+
+const getPlayStationID = function() {
+    return serverStore.get(PLAYSTATION_ID_KEY);
 }
 
 const getOrCreateServerID = function() {
@@ -20,12 +25,28 @@ const getOrCreateServerID = function() {
         // Store a value (will be written to disk asynchronously)
         const createdUUID = getServerUUID();
         console.log(`Generated a new serverID createdUUID: ${createdUUID}`);
-        serverStore.set('server_id', createdUUID);
+        serverStore.set(SERVER_ID_KEY, createdUUID);
     }
-    console.log(`Checked and ended up with serverStore getServerID: ${getServerID()}`);
-    return getServerID();
+    const fetchedID = getServerID();
+    console.log(`Checked and ended up with serverStore fetchedID: ${fetchedID}`);
+    return fetchedID;
+}
+
+const getOrCreatePlayStationID = function() {
+    const playStationID = getPlayStationID();
+
+    if (!playStationID) {
+        // Store a value (will be written to disk asynchronously)
+        const createdUUID = getPlayStationUUID();
+        console.log(`Generated a new playstationID createdUUID: ${createdUUID}`);
+        serverStore.set(PLAYSTATION_ID_KEY, createdUUID);
+    }
+    const fetchedID = getPlayStationID();
+    console.log(`Checked and ended up with serverStore fetchedID: ${fetchedID}`);
+    return fetchedID;
 }
 
 exports.serverStore = serverStore;
 exports.getServerID = getServerID;
 exports.getOrCreateServerID = getOrCreateServerID;
+exports.getOrCreatePlayStationID = getOrCreatePlayStationID;

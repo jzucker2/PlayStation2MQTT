@@ -2,9 +2,10 @@
 
 const Constants = require('./constants');
 const {setPlaystationWake, setPlaystationStandby} = require("./playstation");
-const { getOrCreateServerID } = require("./serverStore");
+const { getOrCreateServerID, getOrCreatePlayStationID } = require("./serverStore");
 
 const serverID = getOrCreateServerID();
+const playstationID = getOrCreatePlayStationID();
 
 const getDevicePayload = (identifier, deviceName, manufacturer, viaDevice= undefined) => {
     const finalPayload = {
@@ -25,7 +26,7 @@ const getServerDevicePayload = () => {
 }
 
 const getPlaystationDevicePayload = () => {
-    return getDevicePayload("bar", "PlayStation", "Sony", serverID);
+    return getDevicePayload(playstationID, "PlayStation", "Sony", serverID);
 }
 
 class HassBase {
@@ -63,7 +64,7 @@ class HassBase {
         if (!startingString) {
             startingString = this.sensorType;
         }
-        return `${serverID}${startingString}${this.objectID}${this.identifier}`;
+        return `${serverID}_${startingString}${this.objectID}${this.identifier}`;
     }
 
     getObjectID() {

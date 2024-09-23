@@ -18,5 +18,11 @@ function getServerUUID() {
     return `playstation2mqtt_${serverUUIDSuffix}`;
 }
 
+function getPlayStationUUID() {
+    const psUUIDSuffix = generateUUID(10);
+    return `playstation_${psUUIDSuffix}`;
+}
+
 exports.generateUUID = generateUUID;
 exports.getServerUUID = getServerUUID;
+exports.getPlayStationUUID = getPlayStationUUID;
