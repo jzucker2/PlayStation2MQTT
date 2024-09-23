@@ -15,7 +15,7 @@ app.use(metricsMiddleware);
 const bodyParser = require('body-parser');
 const mqtt = require("mqtt");
 const Constants = require('./constants');
-const { HassSwitch, HassDiagnosticSensor, HassPublishAllStatesButton } = require("./hassSensors");
+const { HassSwitch, HassServerIDSensor, HassVersionSensor, HassPublishAllStatesButton } = require("./hassSensors");
 const { handleGetPlaystationInfoRequest, handleStandbyPlaystationRequest, handleWakePlaystationRequest } = require("./httpHandlers");
 
 // actual framework is broken as a module :(
@@ -63,19 +63,22 @@ logger.info(`Running on http://${HOST}:${PORT}`);
 
 // MQTT implementation stuff here
 const playstationSwitch = new HassSwitch(client);
-const serverSensor = new HassDiagnosticSensor(client, "Server Version", "server_version");
+const serverVersionSensor = new HassVersionSensor(client);
+const serverIDSensor = new HassServerIDSensor(client);
 const publishAllStatesButton = new HassPublishAllStatesButton(client);
 
 const publishAllDiscoveryMessages = () => {
     logger.info("Publish All Discovery Messages");
     playstationSwitch.publishDiscoveryMessage();
-    serverSensor.publishDiscoveryMessage();
+    serverVersionSensor.publishDiscoveryMessage();
+    serverIDSensor.publishDiscoveryMessage();
     publishAllStatesButton.publishDiscoveryMessage();
 }
 
 const publishAllStatesAction = () => {
     logger.info("Publish All States");
-    serverSensor.publishState();
+    serverVersionSensor.publishState();
+    serverIDSensor.publishState();
 }
 
 const allSubscribeTopics = [
