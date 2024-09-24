@@ -11,7 +11,10 @@ class MQTTClient {
     }
 
     publish = (topic, message) => {
-        this.client.publish(topic, message);
+        const options = {
+            retain: true,
+        };
+        this.client.publish(topic, message, options);
     }
 
     subscribe = (topics, callback) => {
