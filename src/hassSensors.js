@@ -178,6 +178,21 @@ class HassPlayStationSensor extends HassBase {
     getDevicePayload() {
         return getPlaystationDevicePayload();
     }
+
+    getStatePayload() {
+        return "foo";
+    }
+}
+
+class HassPlayStationStateSensor extends HassBase {
+    constructor(mqtt) {
+        const sensorType = "sensor";
+        super(mqtt, sensorType, "Playstation State", "state", sensorType,true, false);
+    }
+    
+    getStatePayload() {
+        return "STANDBY";
+    }
 }
 
 class HassPlayStationPowerSwitch extends HassPlayStationSensor {
