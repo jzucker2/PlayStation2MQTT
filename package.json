@@ -1,6 +1,6 @@
 {
   "name": "playstation2mqtt",
-  "version": "0.14.0",
+  "version": "0.15.0",
   "description": "Manipulate PS5 as a Home Assistant mqtt bridge",
   "main": "server.js",
   "scripts": {
@@ -23,6 +23,7 @@
     "express-prom-bundle": "^6.5.0",
     "fs-store": "^0.3.3",
     "mqtt": "^5.10.1",
+    "pino": "^9.4.0",
     "pino-http": "^10.3.0",
     "playactor": "^0.4.1",
     "prom-client": "^14.1.0"
