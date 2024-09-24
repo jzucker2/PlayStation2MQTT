@@ -189,7 +189,9 @@ class HassPlayStationStateSensor extends HassBase {
     publishPlayStationState = async() => {
         const results = await getPlaystationInfo(this.playstationIP);
         logger.info(`publish ps sensor got results ===> ${results}`);
-        this.mqtt.publish(this.getStateTopic(), "AWAKE");
+        const finalStatus = results.status;
+        logger.info(`publish ps sensor got finalStatus ===> ${finalStatus}`);
+        this.mqtt.publish(this.getStateTopic(), finalStatus);
     }
 }
 
