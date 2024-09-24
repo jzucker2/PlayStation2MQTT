@@ -12,6 +12,7 @@ services:
       - 4242:4242
     environment:
       - CHOKIDAR_USEPOLLING=true
+      - PS5_IP_ADDRESS=${PS5_IP_ADDRESS}
       - MQTT_BROKER_URL=${MQTT_BROKER_URL}
       - MQTT_USERNAME=${MQTT_USERNAME}
       - MQTT_PASSWORD=${MQTT_PASSWORD}

@@ -15,8 +15,9 @@ app.use(metricsMiddleware);
 const bodyParser = require('body-parser');
 const mqtt = require("mqtt");
 const Constants = require('./constants');
-const { HassSwitch, HassServerIDSensor, HassVersionSensor, HassPublishAllStatesButton } = require("./hassSensors");
+const { HassPlayStationPowerSwitch, HassPlayStationStateSensor, HassServerIDSensor, HassVersionSensor, HassPublishAllStatesButton } = require("./hassSensors");
 const { handleGetPlaystationInfoRequest, handleStandbyPlaystationRequest, handleWakePlaystationRequest } = require("./httpHandlers");
+const {getOrCreateServerID} = require("./serverStore");
 
 // actual framework is broken as a module :(
 // const playactor = require('playactor');
@@ -24,6 +25,7 @@ const { handleGetPlaystationInfoRequest, handleStandbyPlaystationRequest, handle
 // Constants
 const PORT = Constants.PORT;
 const HOST = Constants.HOST;
+const serverID = getOrCreateServerID();
 
 // MQTT
 const client = mqtt.connect(Constants.MQTT_BROKER_URL, Constants.mqttConnectionOptions);
@@ -59,38 +61,42 @@ app.get('/playactor/ps5/:ps5_ip/standby', async(req, res) => {
 });
 
 app.listen(PORT, HOST);
-logger.info(`Running on http://${HOST}:${PORT}`);
+logger.info(`Running on http://${HOST}:${PORT} with serverID: ${serverID}`);
 
 // MQTT implementation stuff here
-const playstationSwitch = new HassSwitch(client);
+const playstationPowerSwitch = new HassPlayStationPowerSwitch(client);
+const playstationStateSensor = new HassPlayStationStateSensor(client);
 const serverVersionSensor = new HassVersionSensor(client);
 const serverIDSensor = new HassServerIDSensor(client);
 const publishAllStatesButton = new HassPublishAllStatesButton(client);
 
 const publishAllDiscoveryMessages = () => {
     logger.info("Publish All Discovery Messages");
-    playstationSwitch.publishDiscoveryMessage();
+    playstationPowerSwitch.publishDiscoveryMessage();
+    playstationStateSensor.publishDiscoveryMessage();
     serverVersionSensor.publishDiscoveryMessage();
     serverIDSensor.publishDiscoveryMessage();
     publishAllStatesButton.publishDiscoveryMessage();
 }
 
-const publishAllStatesAction = () => {
-    logger.info("Publish All States");
+const publishAllStatesAction = async() => {
+    logger.info("Starting Publish All States");
     serverVersionSensor.publishState();
     serverIDSensor.publishState();
+    await playstationStateSensor.publishPlayStationState();
+    logger.info("Done with publishing all states");
 }
 
 const allSubscribeTopics = [
-    playstationSwitch.getCommandTopic(),
+    playstationPowerSwitch.getCommandTopic(),
     publishAllStatesButton.getCommandTopic(),
 ];
 
-client.on("connect", () => {
+client.on("connect", async() => {
     logger.debug('MQTT Connected');
 
     publishAllDiscoveryMessages();
-    publishAllStatesAction();
+    await publishAllStatesAction();
     
     client.subscribe(allSubscribeTopics, (err) => {
         logger.debug(`Subscribed to allSubscribeTopics '${allSubscribeTopics}'`);
@@ -106,7 +112,7 @@ client.on("message", async(topic, payload) => {
     // message is Buffer
     const message = payload.toString();
     logger.debug('Received Message:', topic, message);
-    await playstationSwitch.handleMessage(topic, message);
+    await playstationPowerSwitch.handleMessage(topic, message);
     await publishAllStatesButton.handleMessage(topic, message, publishAllStatesAction);
     logger.debug('Done processing all mqtt messages: ', topic, message);
 });
