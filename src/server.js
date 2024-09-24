@@ -99,8 +99,8 @@ mqttClient.client.on("connect", async() => {
     publishAllDiscoveryMessages();
     await publishAllStatesAction();
 
-    mqttClient.client.subscribe(allSubscribeTopics, (err) => {
-        logger.debug(`Subscribed to allSubscribeTopics '${allSubscribeTopics}'`);
+    mqttClient.subscribe(allSubscribeTopics, (err) => {
+        logger.info(`Subscribed to allSubscribeTopics '${allSubscribeTopics}'`);
         if (err) {
             logger.error(`Subscribe error to allSubscribeTopics: ${allSubscribeTopics} with err => '${err}'`);
         }

@@ -14,6 +14,10 @@ class MQTTClient {
         this.client.publish(topic, message);
     }
 
+    subscribe = (topics, callback) => {
+        this.client.subscribe(topics, callback);
+    }
+
 }
 
 exports.MQTTClient = MQTTClient;
