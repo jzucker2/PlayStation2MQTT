@@ -13,7 +13,8 @@ const metricsMiddleware = promBundle({includeMethod: true});
 app.use(metricsMiddleware);
 
 const bodyParser = require('body-parser');
-const mqtt = require("mqtt");
+// const mqtt = require("mqtt");
+const { MQTTClient } = require('./mqttClient');
 const Constants = require('./constants');
 const { HassPlayStationPowerSwitch, HassPlayStationStateSensor, HassServerIDSensor, HassVersionSensor, HassPublishAllStatesButton } = require("./hassSensors");
 const { handleGetPlaystationInfoRequest, handleStandbyPlaystationRequest, handleWakePlaystationRequest } = require("./httpHandlers");
@@ -28,7 +29,7 @@ const HOST = Constants.HOST;
 const serverID = getOrCreateServerID();
 
 // MQTT
-const client = mqtt.connect(Constants.MQTT_BROKER_URL, Constants.mqttConnectionOptions);
+const client = new MQTTClient(Constants.MQTT_BROKER_URL, Constants.mqttConnectionOptions);
 
 // https://stackoverflow.com/questions/10005939/how-do-i-consume-the-json-post-data-in-an-express-application
 // parse application/json
@@ -92,13 +93,13 @@ const allSubscribeTopics = [
     publishAllStatesButton.getCommandTopic(),
 ];
 
-client.on("connect", async() => {
+client.client.on("connect", async() => {
     logger.debug('MQTT Connected');
 
     publishAllDiscoveryMessages();
     await publishAllStatesAction();
     
-    client.subscribe(allSubscribeTopics, (err) => {
+    client.client.subscribe(allSubscribeTopics, (err) => {
         logger.debug(`Subscribed to allSubscribeTopics '${allSubscribeTopics}'`);
         if (err) {
             logger.error(`Subscribe error to allSubscribeTopics: ${allSubscribeTopics} with err => '${err}'`);
@@ -108,7 +109,7 @@ client.on("connect", async() => {
 
 
 
-client.on("message", async(topic, payload) => {
+client.client.on("message", async(topic, payload) => {
     // message is Buffer
     const message = payload.toString();
     logger.debug('Received Message:', topic, message);
