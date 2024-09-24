@@ -2,9 +2,16 @@
 
 const process = require('process');
 const LOG_LEVEL = process.env.LOG_LEVEL || "info";
+// TODO: add to package json?
+const pino = require('pino');
 
 // https://github.com/pinojs/pino-http?tab=readme-ov-file#logger-options
 const pinoHTTPLogger = require('pino-http')({
+    // Reuse an existing logger instance
+    logger: pino({
+        level: LOG_LEVEL,
+    }),
+
     // Logger level is `info` by default
     useLevel: LOG_LEVEL,
 
