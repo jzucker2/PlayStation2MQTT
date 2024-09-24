@@ -1,5 +1,5 @@
 # https://github.com/nodejs/docker-node/issues/1589
-FROM node:20-alpine AS debian_base
+FROM node:22-alpine AS debian_base
 
 FROM debian_base AS node_globals
 ARG NPM_VERSION=10.8.3
