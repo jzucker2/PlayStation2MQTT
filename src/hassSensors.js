@@ -180,7 +180,7 @@ class HassPlayStationSensor extends HassBase {
     }
 }
 
-class HassPlayStationPowerSwitch extends HassBase {
+class HassPlayStationPowerSwitch extends HassPlayStationSensor {
     constructor(mqtt) {
         const sensorType = "switch";
         super(mqtt, sensorType, "Playstation Power", "power", sensorType,true, true);
