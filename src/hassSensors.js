@@ -2,7 +2,7 @@
 
 const { logger } = require("./logging");
 const Constants = require('./constants');
-const {setPlaystationWake, setPlaystationStandby} = require("./playstation");
+const {setPlaystationWake, setPlaystationStandby, getPlaystationInfo} = require("./playstation");
 const { getOrCreateServerID, getOrCreatePlayStationID } = require("./serverStore");
 
 const serverID = getOrCreateServerID();
@@ -178,20 +178,18 @@ class HassPlayStationSensor extends HassBase {
     getDevicePayload() {
         return getPlaystationDevicePayload();
     }
-
-    getStatePayload() {
-        return "foo";
-    }
 }
 
 class HassPlayStationStateSensor extends HassBase {
     constructor(mqtt) {
         const sensorType = "sensor";
-        super(mqtt, sensorType, "Playstation State", "state", sensorType,true, false);
+        super(mqtt, sensorType, "Playstation State", "state", undefined,true, false);
     }
-    
-    getStatePayload() {
-        return "STANDBY";
+
+    publishPlayStationState = async() => {
+        const results = await getPlaystationInfo(this.playstationIP);
+        logger.info(`publish ps sensor got results ===> ${results}`);
+        this.mqtt.publish(this.getStateTopic(), "AWAKE");
     }
 }
 
@@ -250,7 +248,7 @@ class HassPublishAllStatesButton extends HassServerSensor {
         if (topic === this.getCommandTopic()) {
             logger.debug('mqtt switch got bridge publish all states message: ', message);
             if (message === this.pressPayload) {
-                publishAction();
+                await publishAction();
             }
         }
         return Promise.resolve();
@@ -260,4 +258,5 @@ class HassPublishAllStatesButton extends HassServerSensor {
 exports.HassVersionSensor = HassVersionSensor;
 exports.HassServerIDSensor = HassServerIDSensor;
 exports.HassPlayStationPowerSwitch = HassPlayStationPowerSwitch;
+exports.HassPlayStationStateSensor = HassPlayStationStateSensor;
 exports.HassPublishAllStatesButton = HassPublishAllStatesButton;

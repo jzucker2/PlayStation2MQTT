@@ -2,7 +2,7 @@
 FROM node:20-alpine AS debian_base
 
 FROM debian_base AS node_globals
-ARG NPM_VERSION=10.7.0
+ARG NPM_VERSION=10.8.3
 RUN npm install -g npm@${NPM_VERSION}
 
 # from https://github.com/nodejs/docker-node/pull/367

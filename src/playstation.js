@@ -12,7 +12,6 @@ function PlayactorException(cliException) {
     this.toString = function() {
         return `${this.cliException.toString()}`;
     };
-    this.code = this.spawnException.code;
 }
 
 const executePlayactorScript = async (playactorArgs) => {
