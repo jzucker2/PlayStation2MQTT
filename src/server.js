@@ -29,7 +29,7 @@ const HOST = Constants.HOST;
 const serverID = getOrCreateServerID();
 
 // MQTT
-const client = new MQTTClient(Constants.MQTT_BROKER_URL, Constants.mqttConnectionOptions);
+const mqttClient = new MQTTClient(Constants.MQTT_BROKER_URL, Constants.mqttConnectionOptions);
 
 // https://stackoverflow.com/questions/10005939/how-do-i-consume-the-json-post-data-in-an-express-application
 // parse application/json
@@ -65,11 +65,11 @@ app.listen(PORT, HOST);
 logger.info(`Running on http://${HOST}:${PORT} with serverID: ${serverID}`);
 
 // MQTT implementation stuff here
-const playstationPowerSwitch = new HassPlayStationPowerSwitch(client);
-const playstationStateSensor = new HassPlayStationStateSensor(client);
-const serverVersionSensor = new HassVersionSensor(client);
-const serverIDSensor = new HassServerIDSensor(client);
-const publishAllStatesButton = new HassPublishAllStatesButton(client);
+const playstationPowerSwitch = new HassPlayStationPowerSwitch(mqttClient);
+const playstationStateSensor = new HassPlayStationStateSensor(mqttClient);
+const serverVersionSensor = new HassVersionSensor(mqttClient);
+const serverIDSensor = new HassServerIDSensor(mqttClient);
+const publishAllStatesButton = new HassPublishAllStatesButton(mqttClient);
 
 const publishAllDiscoveryMessages = () => {
     logger.info("Publish All Discovery Messages");
@@ -93,13 +93,13 @@ const allSubscribeTopics = [
     publishAllStatesButton.getCommandTopic(),
 ];
 
-client.client.on("connect", async() => {
+mqttClient.client.on("connect", async() => {
     logger.debug('MQTT Connected');
 
     publishAllDiscoveryMessages();
     await publishAllStatesAction();
-    
-    client.client.subscribe(allSubscribeTopics, (err) => {
+
+    mqttClient.client.subscribe(allSubscribeTopics, (err) => {
         logger.debug(`Subscribed to allSubscribeTopics '${allSubscribeTopics}'`);
         if (err) {
             logger.error(`Subscribe error to allSubscribeTopics: ${allSubscribeTopics} with err => '${err}'`);
@@ -109,7 +109,7 @@ client.client.on("connect", async() => {
 
 
 
-client.client.on("message", async(topic, payload) => {
+mqttClient.client.on("message", async(topic, payload) => {
     // message is Buffer
     const message = payload.toString();
     logger.debug('Received Message:', topic, message);
