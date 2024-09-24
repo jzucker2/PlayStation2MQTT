@@ -2,7 +2,6 @@
 
 const process = require('process');
 const LOG_LEVEL = process.env.LOG_LEVEL || "info";
-// TODO: add to package json?
 const pino = require('pino');
 
 // https://github.com/pinojs/pino-http?tab=readme-ov-file#logger-options
