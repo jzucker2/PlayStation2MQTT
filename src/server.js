@@ -13,7 +13,6 @@ const metricsMiddleware = promBundle({includeMethod: true});
 app.use(metricsMiddleware);
 
 const bodyParser = require('body-parser');
-// const mqtt = require("mqtt");
 const { MQTTClient } = require('./mqttClient');
 const Constants = require('./constants');
 const { HassPlayStationPowerSwitch, HassPlayStationStateSensor, HassServerIDSensor, HassVersionSensor, HassPublishAllStatesButton } = require("./hassSensors");
