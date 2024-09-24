@@ -41,7 +41,6 @@ app.get('/', (req, res) => {
 
 // get
 app.get('/-/health', async(req, res) => {
-    // cool tutorial
     return res.json({
         "message": "healthy",
     });
