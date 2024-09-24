@@ -15,7 +15,7 @@ app.use(metricsMiddleware);
 const bodyParser = require('body-parser');
 const mqtt = require("mqtt");
 const Constants = require('./constants');
-const { HassSwitch, HassServerIDSensor, HassVersionSensor, HassPublishAllStatesButton } = require("./hassSensors");
+const { HassPlayStationPowerSwitch, HassServerIDSensor, HassVersionSensor, HassPublishAllStatesButton } = require("./hassSensors");
 const { handleGetPlaystationInfoRequest, handleStandbyPlaystationRequest, handleWakePlaystationRequest } = require("./httpHandlers");
 
 // actual framework is broken as a module :(
@@ -62,14 +62,14 @@ app.listen(PORT, HOST);
 logger.info(`Running on http://${HOST}:${PORT}`);
 
 // MQTT implementation stuff here
-const playstationSwitch = new HassSwitch(client);
+const playstationPowerSwitch = new HassPlayStationPowerSwitch(client);
 const serverVersionSensor = new HassVersionSensor(client);
 const serverIDSensor = new HassServerIDSensor(client);
 const publishAllStatesButton = new HassPublishAllStatesButton(client);
 
 const publishAllDiscoveryMessages = () => {
     logger.info("Publish All Discovery Messages");
-    playstationSwitch.publishDiscoveryMessage();
+    playstationPowerSwitch.publishDiscoveryMessage();
     serverVersionSensor.publishDiscoveryMessage();
     serverIDSensor.publishDiscoveryMessage();
     publishAllStatesButton.publishDiscoveryMessage();
@@ -82,7 +82,7 @@ const publishAllStatesAction = () => {
 }
 
 const allSubscribeTopics = [
-    playstationSwitch.getCommandTopic(),
+    playstationPowerSwitch.getCommandTopic(),
     publishAllStatesButton.getCommandTopic(),
 ];
 
@@ -106,7 +106,7 @@ client.on("message", async(topic, payload) => {
     // message is Buffer
     const message = payload.toString();
     logger.debug('Received Message:', topic, message);
-    await playstationSwitch.handleMessage(topic, message);
+    await playstationPowerSwitch.handleMessage(topic, message);
     await publishAllStatesButton.handleMessage(topic, message, publishAllStatesAction);
     logger.debug('Done processing all mqtt messages: ', topic, message);
 });

@@ -174,16 +174,18 @@ class HassServerIDSensor extends HassDiagnosticSensor {
     }
 }
 
-class HassSwitch extends HassBase {
+class HassPlayStationSensor extends HassBase {
+    getDevicePayload() {
+        return getPlaystationDevicePayload();
+    }
+}
+
+class HassPlayStationPowerSwitch extends HassBase {
     constructor(mqtt) {
         const sensorType = "switch";
         super(mqtt, sensorType, "Playstation Power", "power", sensorType,true, true);
         this.onPayload = "ON";
         this.offPayload = "OFF";
-    }
-
-    getDevicePayload() {
-        return getPlaystationDevicePayload();
     }
 
     getIsOnPayload = (message) => {
@@ -242,5 +244,5 @@ class HassPublishAllStatesButton extends HassServerSensor {
 
 exports.HassVersionSensor = HassVersionSensor;
 exports.HassServerIDSensor = HassServerIDSensor;
-exports.HassSwitch = HassSwitch;
+exports.HassPlayStationPowerSwitch = HassPlayStationPowerSwitch;
 exports.HassPublishAllStatesButton = HassPublishAllStatesButton;
