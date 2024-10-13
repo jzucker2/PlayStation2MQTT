@@ -105,6 +105,15 @@ const promMetrics = {
         });
         return this.hassPublishPlaystationStateErrorCounter = finalMetric;
     },
+    get hassPlaystationStateInfo() {
+        delete this.hassPlaystationStateInfo;
+        const finalMetric = new promMiddleware.promClient.Gauge({
+            name: 'playstation2mqtt_hass_playstation_state_info',
+            help: 'Info about the PlayStation state that is being reported to hass',
+            labelNames: ['playstation_status'],
+        });
+        return this.hassPlaystationStateInfo = finalMetric;
+    },
     get executeCLIScriptSucceededCounter() {
         delete this.executeCLIScriptSucceededCounter;
         const finalMetric = new promMiddleware.promClient.Counter({

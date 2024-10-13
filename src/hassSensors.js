@@ -193,6 +193,7 @@ class HassPlayStationStateSensor extends HassBase {
             logger.info(`publish ps sensor got results ===> ${results}`);
             const finalStatus = results.status;
             logger.info(`publish ps sensor got finalStatus ===> ${finalStatus}`);
+            promMetrics.hassPlaystationStateInfo.labels({ playstation_status: finalStatus }).set(1);
             this.mqtt.publish(this.getStateTopic(), finalStatus);
             promMetrics.hassPublishPlaystationStateSucceededCounter.inc();
         } catch (e) {
