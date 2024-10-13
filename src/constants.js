@@ -15,7 +15,7 @@ module.exports = {
     SERVER_NAME: process.env.SERVER_NAME || 'dev',
     APP_NAME: 'PlayStation2MQTT',
     NODE_ID: process.env.NODE_ID || 'playstation2mqtt',
-    VERSION: '0.17.2',
+    VERSION: '0.17.3',
     APP_URL_HOST: process.env.APP_URL_HOST || `playstation2mqtt.local`,
     SUPPORT_URL: 'https://github.com/jzucker2/PlayStation2MQTT',
     CONFIG_PATH: '/playstation2mqtt/configs/config.json',
