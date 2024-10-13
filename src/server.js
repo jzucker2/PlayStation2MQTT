@@ -107,6 +107,7 @@ mqttClient.client.on("connect", async() => {
 
     const updatePlayStationStateInvervalID = setInterval(async() => {
         // runs every 60 seconds
+        logger.info("Running ps update interval check");
         await publishPlayStationStateAction("interval_update");
     }, Constants.PS_UPDATE_INTERVAL_SECONDS * 1000);
     logger.debug(`updatePlayStationStateInvervalID: ${updatePlayStationStateInvervalID}`);
