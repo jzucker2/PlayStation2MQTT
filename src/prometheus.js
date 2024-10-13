@@ -20,6 +20,15 @@ const promMetrics = {
         });
         return this.publishAllMQTTStatesMessagesCounter = finalMetric;
     },
+    get publishPlayStationMQTTStateMessagesCounter() {
+        delete this.publishPlayStationMQTTStateMessagesCounter;
+        const finalMetric = new promMiddleware.promClient.Counter({
+            name: 'playstation2mqtt_publish_playstation_mqtt_state_messages_total',
+            help: 'Total count of publishing PlayStation MQTT state messages',
+            labelNames: ['source'],
+        });
+        return this.publishPlayStationMQTTStateMessagesCounter = finalMetric;
+    },
     get connectedToMQTTBrokerCounter() {
         delete this.connectedToMQTTBrokerCounter;
         const finalMetric = new promMiddleware.promClient.Counter({
@@ -95,6 +104,15 @@ const promMetrics = {
             help: 'Total count of errors publishing playstation state to MQTT for hass',
         });
         return this.hassPublishPlaystationStateErrorCounter = finalMetric;
+    },
+    get hassPlaystationStateInfo() {
+        delete this.hassPlaystationStateInfo;
+        const finalMetric = new promMiddleware.promClient.Gauge({
+            name: 'playstation2mqtt_hass_playstation_state_info',
+            help: 'Info about the PlayStation state that is being reported to hass',
+            labelNames: ['playstation_status'],
+        });
+        return this.hassPlaystationStateInfo = finalMetric;
     },
     get executeCLIScriptSucceededCounter() {
         delete this.executeCLIScriptSucceededCounter;
