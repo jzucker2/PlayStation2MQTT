@@ -1,8 +1,12 @@
 node_modules
 build
 .dockerignore
-Dockerfile
-Dockerfile.prod
+Dockerfile*
+docker-compose*
 npm-debug.log
 credentials.json
 configs/
+.git
+.gitignore
+.github/
+README.md

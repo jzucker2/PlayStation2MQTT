@@ -4,7 +4,7 @@
   "description": "Manipulate PS5 as a Home Assistant mqtt bridge",
   "main": "server.js",
   "scripts": {
-    "start": "node src/server.js",
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
