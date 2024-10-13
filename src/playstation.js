@@ -61,11 +61,11 @@ const getPlaystationInfo = async (playstationIP) => {
         logger.debug(`info got results ===> ${results}`);
         const currentStatus = formatDeviceStatusResponse(results);
         logger.info(`info got formatted currentStatus ===> ${currentStatus}`);
-        promMetrics.playstationActionSucceededCounter.labels({ action: promAction }).inc()
+        promMetrics.playstationActionSucceededCounter.labels({ action: promAction }).inc();
         return new PlayStationInfo(currentStatus);
     } catch (e) {
         logger.error(`info returning error --> ${e.toString()}`);
-        promMetrics.playstationActionErrorCounter.labels({ action: promAction }).inc()
+        promMetrics.playstationActionErrorCounter.labels({ action: promAction }).inc();
         throw e;
     }
 }
@@ -80,13 +80,13 @@ const setPlaystationStandby = async (playstationIP) => {
     try {
         const results = await executePlayactorScript(playactorArgs);
         logger.debug(`standby got results ===> ${results}`);
-        promMetrics.playstationActionSucceededCounter.labels({ action: promAction }).inc()
+        promMetrics.playstationActionSucceededCounter.labels({ action: promAction }).inc();
         return {
             'message': 'ps5 asleep'
         };
     } catch (e) {
         logger.error(`standby returning error --> ${e.toString()}`);
-        promMetrics.playstationActionErrorCounter.labels({ action: promAction }).inc()
+        promMetrics.playstationActionErrorCounter.labels({ action: promAction }).inc();
         throw e;
     }
 }
@@ -101,13 +101,13 @@ const setPlaystationWake = async (playstationIP) => {
     try {
         const results = await executePlayactorScript(playactorArgs);
         logger.debug(`wake got results ===> ${results}`);
-        promMetrics.playstationActionSucceededCounter.labels({ action: promAction }).inc()
+        promMetrics.playstationActionSucceededCounter.labels({ action: promAction }).inc();
         return {
             'message': 'ps5 awakened'
         };
     } catch (e) {
         logger.error(`wake returning error --> ${e.toString()}`);
-        promMetrics.playstationActionErrorCounter.labels({ action: promAction }).inc()
+        promMetrics.playstationActionErrorCounter.labels({ action: promAction }).inc();
         throw e;
     }
 }
