@@ -49,6 +49,7 @@ const promMetrics = {
         const finalMetric = new promMiddleware.promClient.Counter({
             name: 'playstation2mqtt_received_mqtt_message_total',
             help: 'Total count of MQTT messages received',
+            labelNames: ['topic'],
         });
         return this.receivedMQTTMessageCounter = finalMetric;
     },
@@ -85,6 +86,22 @@ const promMetrics = {
             help: 'Total count of errors publishing playstation state to MQTT for hass',
         });
         return this.hassPublishPlaystationStateErrorCounter = finalMetric;
+    },
+    get executeCLIScriptSucceededCounter() {
+        delete this.executeCLIScriptSucceededCounter;
+        const finalMetric = new promMiddleware.promClient.Counter({
+            name: 'playstation2mqtt_execute_cli_script_succeeded_total',
+            help: 'Total count of successfully executing CLI script',
+        });
+        return this.executeCLIScriptSucceededCounter = finalMetric;
+    },
+    get executeCLIScriptErrorCounter() {
+        delete this.executeCLIScriptErrorCounter;
+        const finalMetric = new promMiddleware.promClient.Counter({
+            name: 'playstation2mqtt_execute_cli_script_error_total',
+            help: 'Total count of errors executing CLI script',
+        });
+        return this.executeCLIScriptErrorCounter = finalMetric;
     },
 };
 

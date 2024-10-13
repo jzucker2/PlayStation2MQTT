@@ -113,7 +113,7 @@ mqttClient.client.on("connect", async() => {
 
 mqttClient.client.on("message", async(topic, payload) => {
     // message is Buffer
-    promMetrics.receivedMQTTMessageCounter.inc();
+    promMetrics.receivedMQTTMessageCounter.labels({ topic: topic }).inc();
     const message = payload.toString();
     logger.debug('Received Message:', topic, message);
     await playstationPowerSwitch.handleMessage(topic, message);

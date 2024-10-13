@@ -3,6 +3,7 @@
 const util = require('node:util');
 const exec = util.promisify(require('node:child_process').exec);
 const { logger } = require("./logging");
+const { promMetrics } = require("./prometheus");
 
 function ResponseParseException(value) {
     this.value = value;
@@ -47,10 +48,18 @@ const executeCLIScript = async (scriptName, scriptArgs) => {
     // playactor browse --timeout 10000
     logger.debug(`executeCLIScript: ${scriptName} with args: ${scriptArgs}`);
     const commandString = getCommandString(scriptName, scriptArgs);
-    const { stdout, stderr } = await exec(commandString);
-    logger.info('process stdout:', stdout);
-    logger.error('process stderr:', stderr);
-    return stdout.toString();
+    try {
+        const { stdout, stderr } = await exec(commandString);
+        logger.info('process stdout:', stdout);
+        logger.error('process stderr:', stderr);
+        promMetrics.executeCLIScriptSucceededCounter.inc();
+        return stdout.toString();
+    } catch (e) {
+        const errorString = e.toString()
+        logger.error(`executeCLIScript returning error --> ${errorString}`);
+        promMetrics.executeCLIScriptErrorCounter.inc();
+        return JSON.stringify({'error': errorString});
+    }
 }
 
 exports.CLIException = CLIException;
