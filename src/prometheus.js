@@ -53,6 +53,15 @@ const promMetrics = {
         });
         return this.receivedMQTTMessageCounter = finalMetric;
     },
+    get publishMQTTMessageCounter() {
+        delete this.publishMQTTMessageCounter;
+        const finalMetric = new promMiddleware.promClient.Counter({
+            name: 'playstation2mqtt_publish_mqtt_message_total',
+            help: 'Total count of MQTT messages published',
+            labelNames: ['topic'],
+        });
+        return this.publishMQTTMessageCounter = finalMetric;
+    },
     get playstationActionSucceededCounter() {
         delete this.playstationActionSucceededCounter;
         const finalMetric = new promMiddleware.promClient.Counter({

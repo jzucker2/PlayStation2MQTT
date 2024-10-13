@@ -1,6 +1,7 @@
 'use strict';
 
 const mqtt = require("mqtt");
+const { promMetrics } = require('./prometheus');
 
 
 class MQTTClient {
@@ -14,6 +15,8 @@ class MQTTClient {
         const options = {
             retain: true,
         };
+
+        promMetrics.publishMQTTMessageCounter.labels({ topic: topic }).inc();
         this.client.publish(topic, message, options);
     }
 
