@@ -4,6 +4,7 @@ const { logger } = require("./logging");
 const Constants = require('./constants');
 const {setPlaystationWake, setPlaystationStandby, getPlaystationInfo} = require("./playstation");
 const { getOrCreateServerID, getOrCreatePlayStationID } = require("./serverStore");
+const { promMetrics } = require('./prometheus');
 
 const serverID = getOrCreateServerID();
 const playstationID = getOrCreatePlayStationID();
@@ -187,11 +188,18 @@ class HassPlayStationStateSensor extends HassBase {
     }
 
     publishPlayStationState = async() => {
-        const results = await getPlaystationInfo(this.playstationIP);
-        logger.info(`publish ps sensor got results ===> ${results}`);
-        const finalStatus = results.status;
-        logger.info(`publish ps sensor got finalStatus ===> ${finalStatus}`);
-        this.mqtt.publish(this.getStateTopic(), finalStatus);
+        try {
+            const results = await getPlaystationInfo(this.playstationIP);
+            logger.info(`publish ps sensor got results ===> ${results}`);
+            const finalStatus = results.status;
+            logger.info(`publish ps sensor got finalStatus ===> ${finalStatus}`);
+            this.mqtt.publish(this.getStateTopic(), finalStatus);
+            promMetrics.hassPublishPlaystationStateSucceededCounter.inc();
+        } catch (e) {
+            logger.error(`info returning error --> ${e.toString()}`);
+            promMetrics.hassPublishPlaystationStateErrorCounter.inc();
+            throw e;
+        }
     }
 }
 

@@ -2,6 +2,7 @@
 
 const { logger } = require("./logging");
 const { executeCLIScript, formatDeviceStatusResponse } = require("./cli");
+const { promMetrics } = require('./prometheus');
 
 const STANDBY_STATUS = 'STANDBY'; // eslint-disable-line no-unused-vars
 const AWAKE_STATUS = 'AWAKE'; // eslint-disable-line no-unused-vars
@@ -51,6 +52,7 @@ class PlayStationInfo {
 const getPlaystationInfo = async (playstationIP) => {
     // https://www.npmjs.com/package/await-spawn
     logger.debug(`info starting with playstationIP: ${playstationIP}`);
+    const promAction = 'get_playstation_info';
 
     const playactorArgs = ['check', '--ip', playstationIP, '--timeout', '5000'];
     logger.debug(`info playactorArgs: ${playactorArgs}`);
@@ -59,9 +61,11 @@ const getPlaystationInfo = async (playstationIP) => {
         logger.debug(`info got results ===> ${results}`);
         const currentStatus = formatDeviceStatusResponse(results);
         logger.info(`info got formatted currentStatus ===> ${currentStatus}`);
+        promMetrics.playstationActionSucceededCounter.labels({ action: promAction }).inc();
         return new PlayStationInfo(currentStatus);
     } catch (e) {
         logger.error(`info returning error --> ${e.toString()}`);
+        promMetrics.playstationActionErrorCounter.labels({ action: promAction }).inc();
         throw e;
     }
 }
@@ -69,17 +73,20 @@ const getPlaystationInfo = async (playstationIP) => {
 const setPlaystationStandby = async (playstationIP) => {
     // https://www.npmjs.com/package/await-spawn
     logger.debug(`standby starting with playstationIP: ${playstationIP}`);
+    const promAction = 'set_playstation_standby';
 
     const playactorArgs = ['standby', '--ip', playstationIP, '--timeout', '5000'];
     logger.debug(`standby playactorArgs: ${playactorArgs}`);
     try {
         const results = await executePlayactorScript(playactorArgs);
         logger.debug(`standby got results ===> ${results}`);
+        promMetrics.playstationActionSucceededCounter.labels({ action: promAction }).inc();
         return {
             'message': 'ps5 asleep'
         };
     } catch (e) {
         logger.error(`standby returning error --> ${e.toString()}`);
+        promMetrics.playstationActionErrorCounter.labels({ action: promAction }).inc();
         throw e;
     }
 }
@@ -87,17 +94,20 @@ const setPlaystationStandby = async (playstationIP) => {
 const setPlaystationWake = async (playstationIP) => {
     // https://www.npmjs.com/package/await-spawn
     logger.debug(`wake starting with playstationIP: ${playstationIP}`);
+    const promAction = 'set_playstation_wake';
 
     const playactorArgs = ['wake', '--ip', playstationIP, '--timeout', '5000', '--no-auth', '--connect-timeout', '5000'];
     logger.debug(`wake playactorArgs: ${playactorArgs}`);
     try {
         const results = await executePlayactorScript(playactorArgs);
         logger.debug(`wake got results ===> ${results}`);
+        promMetrics.playstationActionSucceededCounter.labels({ action: promAction }).inc();
         return {
             'message': 'ps5 awakened'
         };
     } catch (e) {
         logger.error(`wake returning error --> ${e.toString()}`);
+        promMetrics.playstationActionErrorCounter.labels({ action: promAction }).inc();
         throw e;
     }
 }

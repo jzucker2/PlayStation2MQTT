@@ -8,9 +8,8 @@ const app = express();
 app.use(pinoHTTPLogger);
 
 // add monitoring
-const promBundle = require("express-prom-bundle");
-const metricsMiddleware = promBundle({includeMethod: true});
-app.use(metricsMiddleware);
+const { promMiddleware, promMetrics } = require('./prometheus');
+app.use(promMiddleware);
 
 const bodyParser = require('body-parser');
 const { MQTTClient } = require('./mqttClient');
@@ -70,6 +69,7 @@ const serverIDSensor = new HassServerIDSensor(mqttClient);
 const publishAllStatesButton = new HassPublishAllStatesButton(mqttClient);
 
 const publishAllDiscoveryMessages = () => {
+    promMetrics.publishAllMQTTDiscoveryMessagesCounter.inc();
     logger.info("Publish All Discovery Messages");
     playstationPowerSwitch.publishDiscoveryMessage();
     playstationStateSensor.publishDiscoveryMessage();
@@ -79,6 +79,7 @@ const publishAllDiscoveryMessages = () => {
 }
 
 const publishAllStatesAction = async() => {
+    promMetrics.publishAllMQTTStatesMessagesCounter.inc();
     logger.info("Starting Publish All States");
     serverVersionSensor.publishState();
     serverIDSensor.publishState();
@@ -93,14 +94,17 @@ const allSubscribeTopics = [
 
 mqttClient.client.on("connect", async() => {
     logger.debug('MQTT Connected');
+    promMetrics.connectedToMQTTBrokerCounter.inc();
 
     publishAllDiscoveryMessages();
     await publishAllStatesAction();
 
     mqttClient.subscribe(allSubscribeTopics, (err) => {
         logger.info(`Subscribed to allSubscribeTopics '${allSubscribeTopics}'`);
+        promMetrics.subscribedToMQTTTopicsCounter.inc();
         if (err) {
             logger.error(`Subscribe error to allSubscribeTopics: ${allSubscribeTopics} with err => '${err}'`);
+            promMetrics.subscribedToMQTTTopicsWithErrorCounter.inc();
         }
     });
 });
@@ -109,6 +113,7 @@ mqttClient.client.on("connect", async() => {
 
 mqttClient.client.on("message", async(topic, payload) => {
     // message is Buffer
+    promMetrics.receivedMQTTMessageCounter.labels({ topic: topic }).inc();
     const message = payload.toString();
     logger.debug('Received Message:', topic, message);
     await playstationPowerSwitch.handleMessage(topic, message);
