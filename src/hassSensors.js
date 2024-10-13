@@ -196,7 +196,6 @@ class HassPlayStationStateSensor extends HassBase {
             this.mqtt.publish(this.getStateTopic(), finalStatus);
             promMetrics.hassPublishPlaystationStateSucceededCounter.inc();
         } catch (e) {
-            // TODO: add a prometheus metric here for when we fail to publish a state?
             logger.error(`info returning error --> ${e.toString()}`);
             promMetrics.hassPublishPlaystationStateErrorCounter.inc();
             throw e;
