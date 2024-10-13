@@ -6,6 +6,7 @@ module.exports = {
     PS5_IP_ADDRESS: process.env.PS5_IP_ADDRESS || '10.0.1.100',
     HOST: process.env.HOST || '0.0.0.0',
     PORT: process.env.PORT || 4242,
+    PS_UPDATE_INTERVAL_SECONDS: process.env.PS_UPDATE_INTERVAL_SECONDS || 60,
     MQTT_BROKER_URL: process.env.MQTT_BROKER_URL || 'mqtt://mosquitto:1883',
     MQTT_USERNAME: process.env.MQTT_USERNAME || 'foo',
     MQTT_PASSWORD: process.env.MQTT_PASSWORD || 'bar',

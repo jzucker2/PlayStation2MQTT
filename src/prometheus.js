@@ -20,6 +20,15 @@ const promMetrics = {
         });
         return this.publishAllMQTTStatesMessagesCounter = finalMetric;
     },
+    get publishPlayStationMQTTStateMessagesCounter() {
+        delete this.publishPlayStationMQTTStateMessagesCounter;
+        const finalMetric = new promMiddleware.promClient.Counter({
+            name: 'playstation2mqtt_publish_playstation_mqtt_state_messages_total',
+            help: 'Total count of publishing PlayStation MQTT state messages',
+            labelNames: ['source'],
+        });
+        return this.publishPlayStationMQTTStateMessagesCounter = finalMetric;
+    },
     get connectedToMQTTBrokerCounter() {
         delete this.connectedToMQTTBrokerCounter;
         const finalMetric = new promMiddleware.promClient.Counter({

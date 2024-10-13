@@ -78,12 +78,18 @@ const publishAllDiscoveryMessages = () => {
     publishAllStatesButton.publishDiscoveryMessage();
 }
 
-const publishAllStatesAction = async() => {
+const publishPlayStationStateAction = async (source) => {
+    logger.info(`Starting Publish PS State from source: ${source}`);
+    promMetrics.publishPlayStationMQTTStateMessagesCounter.labels({ source: source }).inc();
+    await playstationStateSensor.publishPlayStationState();
+}
+
+const publishAllStatesAction = async(source) => {
     promMetrics.publishAllMQTTStatesMessagesCounter.inc();
     logger.info("Starting Publish All States");
     serverVersionSensor.publishState();
     serverIDSensor.publishState();
-    await playstationStateSensor.publishPlayStationState();
+    await publishPlayStationStateAction(source);
     logger.info("Done with publishing all states");
 }
 
@@ -97,7 +103,13 @@ mqttClient.client.on("connect", async() => {
     promMetrics.connectedToMQTTBrokerCounter.inc();
 
     publishAllDiscoveryMessages();
-    await publishAllStatesAction();
+    await publishAllStatesAction("initial_connection");
+
+    const updatePlayStationStateInvervalID = setInterval(async() => {
+        // runs every 60 seconds
+        await publishPlayStationStateAction("interval_update");
+    }, Constants.PS_UPDATE_INTERVAL_SECONDS * 1000);
+    logger.debug(`updatePlayStationStateInvervalID: ${updatePlayStationStateInvervalID}`);
 
     mqttClient.subscribe(allSubscribeTopics, (err) => {
         logger.info(`Subscribed to allSubscribeTopics '${allSubscribeTopics}'`);
